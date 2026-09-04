@@ -1,0 +1,1661 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Rare Dates | Jordan Valley Medjool in Belgian chocolate</title>
+<meta name="description" content="Jordan Valley Medjool finished in Belgian chocolate, filled by hand in Amman. JOD 15 per box, delivered across Amman.">
+
+<!--
+  RARE DATES / HERO
+  Phase 1: motion system with placeholder art. No generated assets yet.
+
+  Design read: premium-consumer brand hero doubling as agency showcase.
+  Dials: DESIGN_VARIANCE 9 / MOTION_INTENSITY 8 / VISUAL_DENSITY 3
+
+  Type: Bodoni Moda 700 carries the flavour word (mass survives occlusion,
+  didone contrast is built for display sizes). Cinzel stays the wordmark only.
+  Jost body. Brand system: brand/identity.md
+
+  Prototype note: Google Fonts via <link> and Tailwind via CDN are acceptable
+  here because this is a single-file screenshot-driven prototype. A production
+  build self-hosts the faces and compiles Tailwind.
+-->
+
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%230D0709'/%3E%3Cpath d='M50 14 C70 32, 70 68, 50 86 C30 68, 30 32, 50 14 Z' fill='none' stroke='%23C9A227' stroke-width='5'/%3E%3Cpath d='M50 14 L50 86' stroke='%23C9A227' stroke-width='5'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:opsz,wght@6..96,600;6..96,700;6..96,800&family=Cinzel:wght@400;500&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+
+<style>
+/* ═══════════════════════ TOKENS ═══════════════════════ */
+:root{
+  --ink:#0D0709;
+  --gold:#C9A227;
+  --gold-hi:#E0C25C;
+  --cream:#F2E9DC;
+  --cream-dim:#B8A894;
+
+  /* The product grade must be identical on the flying date and the resting
+     one, or the handoff pops. Defined once, used by both. */
+  --date-grade:brightness(1.13) contrast(1.09) saturate(1.09);
+  --date-rest-shadow:drop-shadow(0 18px 26px rgba(6,2,4,.6));
+
+  --ease:cubic-bezier(.16,1,.3,1);
+  --swap:1050ms;
+
+  /* set per slide by JS */
+  --ground:#170509;
+  --bloom:#5C1327;
+  --accent:#C9445A;
+}
+
+*{ box-sizing:border-box; -webkit-font-smoothing:antialiased; }
+
+/* Film grain belongs to the page, not to each section. Scoping it per section
+   meant it ended at every boundary, and the grain/no-grain step read as a hard
+   line. One fixed layer above everything, never interactive. */
+body::after{
+  content:''; position:fixed; inset:0; z-index:90; pointer-events:none;
+  opacity:.05; mix-blend-mode:overlay;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='260' height='260'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.82' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+html,body{ margin:0; height:100%; }
+body{
+  background:var(--ink);
+  color:var(--cream);
+  font-family:'Jost','Century Gothic',Futura,system-ui,sans-serif;
+  font-weight:300;
+  overflow-x:hidden;
+}
+
+.wordmark{ font-family:'Cinzel',Georgia,serif; font-weight:400; letter-spacing:.22em; text-transform:uppercase; }
+.label{ font-weight:500; font-size:10px; letter-spacing:.18em; text-transform:uppercase; }
+
+/* ═══════════════════════ STAGE ═══════════════════════ */
+.stage{ position:relative; height:100svh; overflow:hidden; }
+/* The hero ground is wine and the section under it is ink, so the stage's own
+   bottom edge read as a hard line across the page. Land the ground on exactly
+   the colour the next section starts with. Sits under the chrome (z 20). */
+.stage::after{
+  content:''; position:absolute; left:0; right:0; bottom:0; height:20%;
+  z-index:5; pointer-events:none;
+  background:linear-gradient(to bottom, rgba(13,7,9,0) 0%, rgba(13,7,9,.55) 55%, var(--ink) 100%);
+}
+
+/* Ground cross-fades in place. It never travels: only the objects do.
+   That separation is what reads as depth instead of a slideshow. */
+.ground{
+  position:absolute; inset:0; opacity:0;
+  transition:opacity var(--swap) var(--ease);
+  background:
+    radial-gradient(125% 95% at 26% 12%, var(--bloom) 0%, transparent 58%),
+    radial-gradient(85% 70% at 84% 78%, var(--bloom) 0%, transparent 62%),
+    radial-gradient(150% 130% at 50% 108%, var(--ground) 0%, transparent 72%),
+    var(--ground);
+}
+.ground.live{ opacity:1; }
+
+/* Vignette keeps the edges heavy so the centre reads as lit */
+.vignette{
+  position:absolute; inset:0; pointer-events:none;
+  background:radial-gradient(115% 90% at 50% 45%, transparent 42%, rgba(6,2,4,.72) 100%);
+}
+
+
+
+/* ═══════════════════════ PARALLAX LAYERS ═══════════════════════
+   Every travelling element sits in a .lyr. Its --sp multiplier decides
+   how far it moves per step. Differential speed is the whole trick:
+   background objects linger, the date tracks 1:1, foreground overshoots. */
+.slide{ position:absolute; inset:0; }
+.lyr{
+  position:absolute; inset:0;
+  transform:translate3d(calc(var(--o,0) * var(--sp,1) * 100%),0,0);
+  opacity:var(--vis,0);
+  transition:transform var(--swap) var(--ease), opacity var(--swap) var(--ease);
+  will-change:transform,opacity;
+}
+
+/* ── the flavour word ── */
+.wordwrap{ display:grid; place-items:center; }
+.word{
+  width:min(94vw,1500px); height:min(42vh,380px);
+  overflow:visible;
+}
+.word text{
+  font-family:'Bodoni Moda',Didot,'Times New Roman',serif;
+  font-weight:700;
+  fill:var(--cream);
+  fill-opacity:.93;
+}
+
+/* ── the date ── */
+.datewrap{ display:grid; place-items:center; }
+.date{
+  position:relative; width:clamp(340px,40vw,620px); aspect-ratio:1/1.1;
+  transform:rotate(-7deg);
+  filter:drop-shadow(0 34px 60px rgba(6,2,4,.75)) drop-shadow(0 8px 16px rgba(6,2,4,.6));
+}
+.date img{
+  width:100%; height:100%; object-fit:contain; display:block;
+  filter:brightness(1.14) contrast(1.10) saturate(1.10);
+}
+/* A soft key bloom behind the product so it separates from the ground.
+   This is studio light falloff, not a glow: it never touches the object edge. */
+.date::before{
+  content:''; position:absolute; inset:-22% -18%; z-index:-1; pointer-events:none;
+  background:radial-gradient(closest-side, color-mix(in srgb, var(--accent) 34%, transparent) 0%, transparent 72%);
+  opacity:.5;
+}
+
+/* ── floating objects ── */
+.obj{
+  position:absolute;
+  left:var(--x); top:var(--y);
+  width:var(--size); height:var(--size);
+  margin-left:calc(var(--size) / -2); margin-top:calc(var(--size) / -2);
+  filter:blur(var(--blur,0px));
+}
+.obj-float{
+  width:100%; height:100%;
+  animation:drift var(--dur,10s) var(--delay,0s) infinite ease-in-out;
+}
+.obj-art{
+  width:100%; height:100%; object-fit:contain; display:block;
+  transform:rotate(var(--rot,0deg));
+  filter:drop-shadow(0 10px 18px rgba(6,2,4,.55)) brightness(1.08) saturate(1.06);
+}
+@keyframes drift{
+  0%,100%{ transform:translate3d(0,0,0) rotate(0deg); }
+  33%    { transform:translate3d(6px,-13px,0) rotate(3deg); }
+  66%    { transform:translate3d(-7px,8px,0) rotate(-2deg); }
+}
+
+/* ═══════════════════════ CHROME ═══════════════════════ */
+.chrome{ position:absolute; inset:0; pointer-events:none; z-index:20; }
+.chrome > *{ pointer-events:auto; }
+
+.ctrl{
+  width:56px; height:56px; display:grid; place-items:center;
+  border:1px solid rgba(242,233,220,.20); border-radius:50%;
+  color:var(--cream); background:rgba(13,7,9,.28); cursor:pointer;
+  backdrop-filter:blur(8px);
+  transition:transform .45s var(--ease), border-color .45s var(--ease), background-color .45s var(--ease);
+}
+.ctrl:hover{ border-color:var(--gold); background:rgba(201,162,39,.12); transform:scale(1.06); }
+.ctrl:active{ transform:scale(.95); }
+.ctrl:focus-visible{ outline:1px solid var(--gold-hi); outline-offset:4px; }
+
+.rail-item{
+  position:relative; color:var(--cream-dim); cursor:pointer; background:none; border:0;
+  padding:6px 0; font-family:inherit;
+  transition:color .5s var(--ease);
+}
+.rail-item::after{
+  content:''; position:absolute; left:0; right:0; bottom:0; height:1px;
+  background:var(--gold); transform:scaleX(0); transform-origin:left;
+  transition:transform .55s var(--ease);
+}
+.rail-item:hover,.rail-item:focus-visible{ color:var(--cream); }
+.rail-item[aria-current="true"]{ color:var(--gold); }
+.rail-item[aria-current="true"]::after,
+.rail-item:hover::after{ transform:scaleX(1); }
+.rail-item:focus-visible{ outline:1px solid var(--gold-hi); outline-offset:5px; }
+
+.cta{
+  display:inline-flex; align-items:center; gap:.65rem;
+  background:var(--gold); color:var(--ink);
+  padding:.9rem 1.9rem; text-decoration:none;
+  box-shadow:0 1px 2px rgba(6,2,4,.5), 0 10px 26px rgba(6,2,4,.4);
+  transition:transform .45s var(--ease), background-color .35s var(--ease);
+}
+.cta:hover{ background:var(--gold-hi); transform:translateY(-2px); }
+.cta:active{ transform:translateY(0); }
+.cta:focus-visible{ outline:1px solid var(--gold-hi); outline-offset:4px; }
+
+/* copy block swaps with a short lift so it never feels bolted to the slide */
+.copy{ transition:opacity .4s var(--ease), transform .4s var(--ease); }
+.copy.swapping{ opacity:0; transform:translateY(10px); }
+
+.booting .lyr,.booting .ground,.booting .copy{ transition:none !important; }
+
+
+/* ═══════════════════════ COLLECTION ═══════════════════════ */
+.collection{
+  position:relative; background:var(--ink);
+  padding:clamp(76px,11vh,140px) 0 clamp(96px,15vh,180px);
+}
+.collection::before{
+  content:''; position:absolute; inset:0; pointer-events:none;
+  background:radial-gradient(120% 62% at 50% 8%, rgba(92,19,39,.34) 0%, transparent 64%);
+  /* A bloom that is still bright at the section's own boundary shows up as a
+     hard line where the next section starts. Mask it to zero at both edges. */
+  -webkit-mask-image:linear-gradient(to bottom, transparent 0%, #000 14%, #000 86%, transparent 100%);
+  mask-image:linear-gradient(to bottom, transparent 0%, #000 14%, #000 86%, transparent 100%);
+}
+.col-inner{ position:relative; width:min(1180px,92vw); margin-inline:auto; }
+
+.col-head{
+  display:flex; align-items:flex-end; justify-content:space-between;
+  gap:2rem; flex-wrap:wrap; margin-bottom:clamp(38px,6vh,70px);
+}
+.col-title{
+  font-family:'Bodoni Moda',Didot,serif; font-weight:600;
+  font-size:clamp(2.1rem,5vw,3.5rem); letter-spacing:-.02em; line-height:1;
+  margin:0; color:var(--cream);
+}
+.col-sub{ margin:0; max-width:24rem; color:var(--cream-dim); font-size:clamp(.92rem,1vw,1rem); }
+
+.cards{ display:grid; grid-template-columns:repeat(3,1fr); gap:clamp(14px,1.8vw,26px); align-items:start; }
+/* Offset the middle column so the row does not read as three identical tiles. */
+.cards > :nth-child(3n+2){ --off:clamp(16px,3vw,46px); }
+@media(max-width:900px){
+  .cards{ grid-template-columns:repeat(2,1fr); }
+  .cards > :nth-child(3n+2){ --off:0px; }
+  .cards > :nth-child(2n){ --off:clamp(14px,3vw,34px); }
+}
+@media(max-width:600px){
+  .cards{ grid-template-columns:1fr; }
+  .cards > *{ --off:0px; }
+  /* a full-height date per card is too much scrolling on a phone. Safe to
+     change: the flight measures the painted image box on both ends, so the
+     slot no longer has to share the artwork's aspect ratio. */
+  .card-slot{ aspect-ratio:1/0.68; }
+}
+
+.card{
+  position:relative; padding:clamp(15px,1.7vw,24px);
+  border:1px solid rgba(116,25,47,.34);
+  background:linear-gradient(168deg, rgba(43,8,18,.86) 0%, rgba(13,7,9,.94) 100%);
+  transition:border-color .6s var(--ease), transform .6s var(--ease);
+}
+.card:hover{ border-color:rgba(201,162,39,.34); }
+
+.card-slot{
+  position:relative; aspect-ratio:1/1.1; display:grid; place-items:center;
+  margin-bottom:clamp(12px,1.4vw,20px);
+}
+/* the flavour's own light, sitting under its date */
+.card-slot::before{
+  content:''; position:absolute; inset:2% 0 6%; z-index:0; pointer-events:none;
+  background:radial-gradient(closest-side, color-mix(in srgb, var(--c-accent) 30%, transparent) 0%, transparent 74%);
+  opacity:.44;
+}
+.card-slot img{
+  position:relative; z-index:1;
+  width:100%; height:100%; object-fit:contain; display:block;
+  transform:rotate(var(--c-rot,0deg));
+  filter:var(--date-grade) var(--date-rest-shadow);
+  transition:opacity .45s var(--ease);
+}
+/* the waiting card: its date is still up in the hero */
+.card[data-waiting="1"] .card-slot img{ opacity:0; }
+.card[data-waiting="1"] .card-slot::before{ opacity:.16; }
+
+.card-name{
+  font-family:'Cinzel',Georgia,serif; font-weight:400; letter-spacing:.10em;
+  text-transform:uppercase; font-size:clamp(.86rem,1vw,1rem);
+  margin:0 0 .6rem; color:var(--cream);
+}
+.card-spec{ margin:0; font-size:clamp(.82rem,.92vw,.92rem); line-height:1.65; color:var(--cream-dim); }
+
+/* ── the countdown card ── */
+.card-next .card-slot{ display:grid; place-items:center; }
+.next-mark{ width:clamp(46px,5vw,68px); color:var(--gold); opacity:.85; }
+.cd{ display:flex; gap:clamp(10px,1.4vw,20px); margin:0 0 .1rem; }
+.cd div{ text-align:center; }
+.cd b{
+  display:block; font-family:'Bodoni Moda',Didot,serif; font-weight:600;
+  font-size:clamp(1.5rem,2.6vw,2.2rem); line-height:1; color:var(--gold);
+  font-variant-numeric:tabular-nums;
+}
+.cd span{
+  display:block; margin-top:.42rem; font-size:9px; letter-spacing:.16em;
+  text-transform:uppercase; color:var(--cream-dim);
+}
+
+
+/* ── the section breathes ── */
+.col-atmos{
+  position:absolute; inset:0; overflow:hidden; pointer-events:none; z-index:0;
+  /* overflow:hidden clips these at the section edge, and a clipped blurred
+     shape is itself a hard edge. Fade the whole layer out before it gets cut. */
+  -webkit-mask-image:linear-gradient(to bottom, transparent 0%, #000 10%, #000 90%, transparent 100%);
+  mask-image:linear-gradient(to bottom, transparent 0%, #000 10%, #000 90%, transparent 100%);
+}
+.col-atmos img{
+  position:absolute; left:var(--x); top:var(--y); width:var(--s);
+  opacity:var(--o,.14); filter:blur(var(--b,3px)) saturate(.9);
+  animation:cardDrift var(--fd,16s) infinite ease-in-out;
+}
+.collection .col-inner{ z-index:1; }
+
+
+/* One drift used by dates and by the atmosphere. It starts and ends at zero
+   offset, which is what lets a landing date pick it up with no jump. */
+@keyframes cardDrift{
+  0%,100%{ transform:translate3d(0,0,0) rotate(0deg); }
+  33%    { transform:translate3d(var(--dx1,4px),var(--dy1,-11px),0) rotate(var(--dr1,1.1deg)); }
+  66%    { transform:translate3d(var(--dx2,-5px),var(--dy2,7px),0) rotate(var(--dr2,-.9deg)); }
+}
+.card-float{ width:100%; height:100%; }
+/* the waiting card holds still: its date has not arrived yet */
+.card:not([data-waiting="1"]) .card-float{ animation:cardDrift var(--fd,11s) infinite ease-in-out; }
+
+/* ── reveal + hover, composed through vars so nothing fights ── */
+.card{
+  --off:0px; --rise:24px; --hover:0px;
+  transform:translate3d(0, calc(var(--off) + var(--rise) + var(--hover)), 0);
+  opacity:0;
+  transition:transform .8s var(--ease), opacity .8s var(--ease),
+             border-color .6s var(--ease), background-color .6s var(--ease);
+}
+.card.in{ --rise:0px; opacity:1; }
+.card.in:hover{ --hover:-7px; border-color:rgba(201,162,39,.42); }
+.card.in:hover .card-slot::before{ opacity:.8; }
+.card.in:hover .card-slot img{ filter:var(--date-grade) drop-shadow(0 26px 36px rgba(6,2,4,.7)); }
+.card-slot img{ transition:filter .6s var(--ease); }
+
+/* a gold hairline draws itself across the top edge on hover */
+.card::after{
+  content:''; position:absolute; left:0; right:0; top:-1px; height:1px;
+  background:linear-gradient(90deg,transparent,var(--gold),transparent);
+  transform:scaleX(0); transform-origin:left;
+  transition:transform .7s var(--ease);
+}
+.card.in:hover::after{ transform:scaleX(1); }
+
+.col-head{ opacity:0; transform:translateY(20px);
+  transition:opacity .9s var(--ease), transform .9s var(--ease); }
+.col-head.in{ opacity:1; transform:none; }
+
+
+/* ── the weekly drop ── */
+.card-next{ background:linear-gradient(168deg, rgba(58,40,10,.5) 0%, rgba(13,7,9,.95) 100%); border-color:rgba(201,162,39,.3); }
+.next-stage{ position:relative; display:grid; place-items:center; width:100%; height:100%; }
+
+
+
+
+.next-mark{ position:relative; width:clamp(40px,4.4vw,60px); color:var(--gold); opacity:.9;
+  animation:markPulse 5.5s infinite ease-in-out; }
+@keyframes markPulse{ 0%,100%{ opacity:.55; transform:scale(1); } 50%{ opacity:1; transform:scale(1.06); } }
+.next-note{ margin:.85rem 0 0; font-size:clamp(.76rem,.85vw,.84rem); line-height:1.6; color:var(--cream-dim); opacity:.8; }
+.cd b{ transition:color .4s var(--ease); }
+
+.next-cta{
+  position:relative; display:inline-flex; align-items:center; gap:.5rem;
+  margin-top:.95rem; color:var(--gold); text-decoration:none;
+  transition:color .45s var(--ease);
+}
+.next-cta::after{
+  content:''; position:absolute; left:0; right:0; bottom:-3px; height:1px;
+  background:var(--gold); transform:scaleX(0); transform-origin:left;
+  transition:transform .55s var(--ease);
+}
+.next-cta:hover{ color:var(--gold-hi); }
+.next-cta:hover::after{ transform:scaleX(1); }
+.next-cta:focus-visible{ outline:1px solid var(--gold-hi); outline-offset:5px; }
+.next-cta svg{ transition:transform .5s var(--ease); }
+.next-cta:hover svg{ transform:translateX(4px); }
+
+
+
+/* ═══════════════════════ FLAVOUR PAGE ═══════════════════════
+   Not a separate document: a hash-routed view over the same page, so the
+   date can travel from its card into the page as one continuous object.
+   Each flavour brings its own ground, bloom and accent, so opening one is
+   like stepping into that flavour's world rather than reading a spec sheet. */
+.fpage{
+  position:fixed; inset:0; z-index:80; overflow-y:auto; overscroll-behavior:contain;
+  opacity:0; pointer-events:none;
+  transition:opacity .5s var(--ease);
+}
+.fpage.open{ opacity:1; pointer-events:auto; }
+.fp-ground{
+  position:fixed; inset:0; z-index:0;
+  background:
+    radial-gradient(120% 90% at 24% 8%, var(--bloom) 0%, transparent 58%),
+    radial-gradient(90% 75% at 86% 82%, var(--bloom) 0%, transparent 62%),
+    radial-gradient(150% 130% at 50% 108%, var(--ground) 0%, transparent 72%),
+    var(--ground);
+}
+.fp-vig{ position:fixed; inset:0; z-index:1; pointer-events:none;
+  background:radial-gradient(115% 90% at 50% 45%, transparent 40%, rgba(6,2,4,.74) 100%); }
+
+.fp-atmos{ position:fixed; inset:0; z-index:1; pointer-events:none; overflow:hidden; }
+.fp-atmos img{
+  position:absolute; left:var(--x); top:var(--y); width:var(--s);
+  opacity:var(--o,.16); filter:blur(var(--b,3px));
+  animation:cardDrift var(--fd,17s) infinite ease-in-out;
+}
+
+.fp-inner{
+  position:relative; z-index:3;
+  width:min(1180px,92vw); margin-inline:auto;
+  min-height:100svh; display:grid; align-items:center;
+  grid-template-columns:1.05fr .95fr; gap:clamp(28px,5vw,80px);
+  padding:clamp(96px,12vh,140px) 0 clamp(120px,16vh,160px);
+}
+@media(max-width:900px){
+  .fp-inner{ grid-template-columns:1fr; gap:clamp(18px,4vw,32px);
+             padding-top:clamp(84px,11vh,120px); align-content:center; }
+}
+
+.fp-stage{ position:relative; display:grid; place-items:center; }
+.fp-stage::before{
+  content:''; position:absolute; inset:6% 2% 10%; z-index:0; pointer-events:none;
+  background:radial-gradient(closest-side, color-mix(in srgb, var(--accent) 34%, transparent) 0%, transparent 72%);
+  opacity:.55;
+}
+#fpDate{
+  position:relative; z-index:1; width:min(100%,520px); aspect-ratio:1/1.1;
+  object-fit:contain; display:block;
+  filter:var(--date-grade) drop-shadow(0 34px 54px rgba(6,2,4,.7));
+  animation:cardDrift 13s infinite ease-in-out;
+}
+
+.fp-copy > *{ opacity:0; transform:translateY(16px); }
+.fpage.in .fp-copy > *{ opacity:1; transform:none;
+  transition:opacity .7s var(--ease), transform .7s var(--ease); }
+.fpage.in .fp-copy > :nth-child(1){ transition-delay:.06s }
+.fpage.in .fp-copy > :nth-child(2){ transition-delay:.13s }
+.fpage.in .fp-copy > :nth-child(3){ transition-delay:.20s }
+.fpage.in .fp-copy > :nth-child(4){ transition-delay:.27s }
+.fpage.in .fp-copy > :nth-child(5){ transition-delay:.34s }
+
+.fp-title{
+  font-family:'Bodoni Moda',Didot,serif; font-weight:600;
+  font-size:clamp(2.6rem,7vw,4.6rem); line-height:.95; letter-spacing:-.02em;
+  margin:0 0 1.1rem; color:var(--cream);
+}
+.fp-spec{ margin:0 0 1.9rem; max-width:34ch; color:var(--cream);
+  font-size:clamp(1rem,1.25vw,1.15rem); line-height:1.7; }
+.fp-parts{ list-style:none; margin:0 0 1.9rem; padding:0; max-width:32ch; }
+.fp-parts li{
+  display:flex; align-items:baseline; gap:.85rem; padding:.62rem 0;
+  border-top:1px solid rgba(242,233,220,.13);
+  font-size:clamp(.86rem,1vw,.95rem); color:var(--cream-dim);
+}
+.fp-parts li:last-child{ border-bottom:1px solid rgba(242,233,220,.13); }
+.fp-parts svg{ width:9px; flex:none; color:var(--accent); opacity:.9; }
+.fp-note{ margin:0 0 2.2rem; max-width:36ch; color:var(--cream-dim);
+  font-size:clamp(.9rem,1.05vw,1rem); line-height:1.75; }
+
+.fp-close{
+  position:fixed; top:clamp(18px,2.4vw,30px); inset-inline-end:clamp(18px,2.4vw,30px);
+  z-index:6; width:50px; height:50px; display:grid; place-items:center;
+  border:1px solid rgba(242,233,220,.22); border-radius:50%; cursor:pointer;
+  background:rgba(13,7,9,.34); color:var(--cream); backdrop-filter:blur(8px);
+  transition:transform .45s var(--ease), border-color .45s var(--ease), background-color .45s var(--ease);
+}
+.fp-close:hover{ border-color:var(--gold); background:rgba(201,162,39,.14); transform:rotate(90deg); }
+.fp-close:focus-visible{ outline:1px solid var(--gold-hi); outline-offset:4px; }
+
+.fp-nav{
+  position:fixed; z-index:6; left:0; right:0; bottom:0;
+  display:flex; align-items:center; justify-content:center; gap:clamp(16px,3vw,34px);
+  padding:clamp(26px,4vh,44px) 16px clamp(20px,3.4vh,36px);
+}
+/* the nav is fixed over scrolling content, so give it a scrim of the flavour's
+   own ground rather than letting list rows collide with it */
+.fp-nav::before{
+  content:''; position:absolute; inset:0; z-index:-1; pointer-events:none;
+  background:linear-gradient(to top, var(--ground) 18%, color-mix(in srgb, var(--ground) 70%, transparent) 62%, transparent 100%);
+}
+.fp-nav button{
+  display:inline-flex; align-items:center; gap:.6rem; cursor:pointer;
+  background:none; border:0; color:var(--cream-dim); font-family:inherit;
+  transition:color .45s var(--ease);
+}
+.fp-nav button:hover{ color:var(--gold); }
+.fp-nav button:focus-visible{ outline:1px solid var(--gold-hi); outline-offset:5px; }
+.fp-nav svg{ width:14px; transition:transform .45s var(--ease); }
+.fp-nav .prev:hover svg{ transform:translateX(-4px); }
+.fp-nav .next:hover svg{ transform:translateX(4px); }
+.fp-nav .dot{ width:4px; height:4px; border-radius:50%; background:rgba(242,233,220,.3); }
+
+/* the date travelling from card into page */
+#pflyer{ position:fixed; left:0; top:0; z-index:85; pointer-events:none; opacity:0; will-change:transform; }
+#pflyer img{ width:100%; height:100%; object-fit:contain; display:block;
+  filter:var(--date-grade) drop-shadow(0 30px 48px rgba(6,2,4,.7)); }
+
+/* the whole card is the target, while the name stays the real link */
+.card-link{ color:inherit; text-decoration:none; }
+.card-link::after{ content:''; position:absolute; inset:0; z-index:4; }
+.card-link:focus-visible{ outline:none; }
+.card:has(.card-link:focus-visible){ border-color:var(--gold-hi); }
+
+body.locked{ overflow:hidden; }
+
+
+/* ── the weekly card ──────────────────────────────────────────────────────
+   Deliberately the odd one out. The other five show you a date; this one
+   withholds it. Title on top rather than under the image, a blurred silhouette
+   instead of a product, and a question mark doing the work the photograph does
+   everywhere else. */
+.card-next{
+  background:linear-gradient(168deg, rgba(58,40,10,.5) 0%, rgba(13,7,9,.95) 100%);
+  border-color:rgba(201,162,39,.32);
+  display:flex; flex-direction:column;
+}
+.next-title{
+  font-family:'Bodoni Moda',Didot,serif; font-weight:600;
+  font-size:clamp(1.7rem,2.5vw,2.3rem); line-height:1; letter-spacing:-.02em;
+  margin:0 0 .1rem; color:var(--cream);
+}
+.next-stage{ position:relative; display:grid; place-items:center; width:100%; height:100%; }
+/* `.card-slot img` is (0,0,1,1) and was beating a single-class selector, so the
+   normal product grade won and the date came through sharp. Two classes plus the
+   element outrank it without reaching for !important. */
+.next-stage img.next-blur{
+  position:absolute; inset:0; margin:auto; width:88%; height:82%;
+  object-fit:contain; opacity:.5;
+  filter:blur(13px) saturate(.25) brightness(.95) contrast(.85);
+  animation:cardDrift 16s infinite ease-in-out;
+}
+.next-q{
+  position:relative; z-index:1;
+  font-family:'Cinzel',Georgia,serif; font-weight:500;
+  font-size:clamp(9rem,19vw,15rem); line-height:.84; color:var(--gold-hi);
+  /* Five layers from tight to very wide. The near layers give the glyph its
+     edge, the far ones spill light onto the card behind it. */
+  text-shadow:
+    0 0 8px   rgba(224,194,92,.9),
+    0 0 24px  rgba(201,162,39,.72),
+    0 0 58px  rgba(201,162,39,.5),
+    0 0 120px rgba(201,162,39,.34),
+    0 0 210px rgba(201,162,39,.2);
+  animation:qBreathe 6s infinite ease-in-out;
+}
+.next-q::before{
+  content:''; position:absolute; inset:-78% -95%; z-index:-1; pointer-events:none;
+  background:radial-gradient(closest-side,
+    rgba(201,162,39,.42) 0%, rgba(201,162,39,.20) 40%, rgba(201,162,39,.07) 62%, transparent 78%);
+  animation:qBloom 6s infinite ease-in-out;
+}
+@keyframes qBloom{
+  0%,100%{ opacity:.75; transform:scale(.96); }
+  50%    { opacity:1;   transform:scale(1.06); }
+}
+@keyframes qBreathe{
+  0%,100%{ transform:scale(1) rotate(0deg); opacity:.92; }
+  50%    { transform:scale(1.05) rotate(-1.5deg); opacity:1; }
+}
+.next-lead{
+  margin:.2rem 0 .5rem; color:var(--gold);
+  font-family:'Cinzel',Georgia,serif; letter-spacing:.09em; text-transform:uppercase;
+  font-size:clamp(.8rem,.95vw,.92rem);
+}
+.next-note{ margin:0 0 1.1rem; font-size:clamp(.8rem,.9vw,.88rem); line-height:1.65; color:var(--cream-dim); }
+.card-next .cd{ margin-top:auto; }
+
+
+/* ═══════════════════════ ORIGIN ═══════════════════════
+   The Jordan Valley is the one claim Bateel and Patchi structurally cannot
+   make, so it gets a full-width moment of its own rather than a bullet in a
+   list. Centred manifesto: no image, no card, type carries it. */
+.origin{ position:relative; background:var(--ink); padding:clamp(90px,15vh,180px) 0; overflow:hidden; }
+.origin::before{
+  content:''; position:absolute; inset:0; pointer-events:none;
+  background:radial-gradient(90% 70% at 50% 46%, rgba(92,19,39,.4) 0%, transparent 66%);
+  -webkit-mask-image:linear-gradient(to bottom, transparent 0%, #000 14%, #000 86%, transparent 100%);
+  mask-image:linear-gradient(to bottom, transparent 0%, #000 14%, #000 86%, transparent 100%);
+}
+.origin-inner{
+  position:relative; width:min(1180px,92vw); margin-inline:auto;
+  display:grid; grid-template-columns:1.1fr .9fr; align-items:center;
+  gap:clamp(26px,5vw,72px); text-align:left;
+}
+.origin-copy{ max-width:34rem; }
+.origin h2{
+  font-family:'Cormorant Garamond',Georgia,serif; font-weight:300;
+  font-size:clamp(2.2rem,5.6vw,4.2rem); line-height:1.04; letter-spacing:-.03em;
+  margin:0 0 1.3rem; color:var(--cream);
+}
+.origin h2 em{ font-style:italic; color:var(--gold); }
+.origin p{ margin:0; max-width:46ch; color:var(--cream-dim);
+  font-size:clamp(.98rem,1.15vw,1.1rem); line-height:1.8; }
+
+/* It is fruit hanging on a palm, so it hangs and it sways. The motion is the
+   subject's own behaviour rather than decoration. */
+.origin-visual{ display:grid; place-items:start center; }
+.origin-visual img{
+  width:min(100%,380px); display:block;
+  transform-origin:52% 0;
+  filter:var(--date-grade) drop-shadow(0 42px 62px rgba(6,2,4,.72));
+  animation:sway 9s infinite ease-in-out;
+}
+@keyframes sway{
+  0%,100%{ transform:rotate(-1.7deg); }
+  50%    { transform:rotate(1.7deg); }
+}
+@media(max-width:860px){
+  .origin-inner{ grid-template-columns:1fr; text-align:center; gap:clamp(20px,4vw,34px); }
+  .origin-copy{ max-width:none; order:2; }
+  .origin p{ margin-inline:auto; }
+  .origin-visual{ order:1; }
+  .origin-visual img{ width:min(58vw,240px); }
+}
+.origin-marks{
+  display:flex; align-items:center; gap:clamp(11px,1.6vw,20px);
+  margin-top:clamp(28px,4.5vh,46px); flex-wrap:wrap;
+}
+@media(max-width:860px){ .origin-marks{ justify-content:center; } }
+.origin-marks span{ color:var(--cream); }
+.origin-marks i{ display:block; width:1px; height:22px; background:rgba(201,162,39,.45); flex:none; }
+@media(max-width:640px){ .origin-marks i{ display:none; } }
+
+/* ═══════════════════════ CORPORATE ═══════════════════════
+   Hazem is the margin. One compact band, businesslike, no cards, no imagery. */
+.corp{ position:relative; background:var(--ink); border-top:1px solid rgba(116,25,47,.34);
+  border-bottom:1px solid rgba(116,25,47,.34); padding:clamp(48px,8vh,84px) 0; }
+.corp-inner{
+  width:min(1180px,92vw); margin-inline:auto;
+  display:grid; grid-template-columns:1.4fr 1fr auto; gap:clamp(20px,4vw,56px); align-items:center;
+}
+.corp h2{ font-family:'Cormorant Garamond',Georgia,serif; font-weight:400;
+  font-size:clamp(1.5rem,2.8vw,2.1rem); line-height:1.16; letter-spacing:-.02em; margin:0; color:var(--cream); }
+.corp p{ margin:0; color:var(--cream-dim); font-size:clamp(.86rem,.98vw,.95rem); line-height:1.7; }
+@media(max-width:900px){
+  .corp-inner{ grid-template-columns:1fr; gap:1.4rem; }
+  .corp .btn-ghost{ justify-self:start; }
+}
+.btn-ghost{
+  display:inline-flex; align-items:center; gap:.7rem; white-space:nowrap;
+  border:1px solid rgba(201,162,39,.42); color:var(--cream); padding:.95rem 1.9rem; text-decoration:none;
+  transition:transform .5s var(--ease), border-color .5s var(--ease), background-color .5s var(--ease);
+}
+.btn-ghost:hover{ border-color:var(--gold); background:rgba(201,162,39,.08); transform:translateY(-2px); }
+.btn-ghost:active{ transform:translateY(0); }
+.btn-ghost:focus-visible{ outline:1px solid var(--gold-hi); outline-offset:4px; }
+
+/* ═══════════════════════ FOOTER ═══════════════════════ */
+.foot{ position:relative; background:var(--ink); padding:clamp(56px,9vh,96px) 0 clamp(28px,4vh,40px); }
+.foot-inner{ width:min(1180px,92vw); margin-inline:auto; }
+.foot-top{ display:grid; grid-template-columns:1.3fr 1fr 1fr; gap:clamp(24px,4vw,56px);
+  padding-bottom:clamp(30px,5vh,48px); }
+@media(max-width:820px){ .foot-top{ grid-template-columns:1fr 1fr; } }
+@media(max-width:560px){ .foot-top{ grid-template-columns:1fr; } }
+.foot-mark{ display:flex; align-items:center; gap:14px; margin-bottom:1.1rem; }
+.foot-tag{ font-family:'Cormorant Garamond',Georgia,serif; font-style:italic; font-weight:300;
+  font-size:clamp(1.15rem,1.7vw,1.5rem); color:var(--cream-dim); margin:0; }
+.foot h3{ font-family:'Cinzel',Georgia,serif; font-weight:400; letter-spacing:.1em; text-transform:uppercase;
+  font-size:.72rem; color:var(--gold); margin:0 0 .95rem; }
+.foot ul{ list-style:none; margin:0; padding:0; display:grid; gap:.62rem; }
+.foot a{ color:var(--cream-dim); text-decoration:none; font-size:.92rem;
+  transition:color .4s var(--ease); }
+.foot a:hover{ color:var(--gold); }
+.foot a:focus-visible{ outline:1px solid var(--gold-hi); outline-offset:4px; }
+.foot li{ color:var(--cream-dim); font-size:.92rem; line-height:1.6; }
+.foot-base{ border-top:1px solid rgba(242,233,220,.1); padding-top:clamp(18px,3vh,26px);
+  display:flex; justify-content:space-between; gap:1rem; flex-wrap:wrap; }
+.foot-base p{ margin:0; color:rgba(184,168,148,.6); font-size:.76rem; letter-spacing:.06em; }
+
+
+.card-price{ margin:.85rem 0 0; color:var(--gold); letter-spacing:.14em; }
+.fp-buy{ display:flex; align-items:center; gap:1.15rem; flex-wrap:wrap; }
+.fp-price{ font-family:'Cinzel',Georgia,serif; letter-spacing:.09em; text-transform:uppercase;
+  font-size:.78rem; color:var(--cream-dim); }
+
+
+/* The five flavour cards open a page, so their hover promises something. This
+   one has no destination, so the lift, the gold hairline and the pointer are
+   all removed: hover state on a dead card is a lie about what a click does. */
+.card-next{ cursor:default; }
+.card-next.in:hover{ --hover:0px; border-color:rgba(201,162,39,.32); }
+.card-next.in:hover::after{ transform:scaleX(0); }
+.card-next.in:hover .card-slot::before{ opacity:inherit; }
+/* `.card.in:hover .card-slot img` also matches the blurred silhouette, so on
+   hover it was being handed the normal product grade and the date snapped into
+   focus. Five classes plus the element outrank that rule and hold the blur. */
+.card-next.in:hover .next-stage img.next-blur{
+  filter:blur(13px) saturate(.25) brightness(.95) contrast(.85);
+}
+
+
+/* ═══════════════════════ HERO CHROME ═══════════════════════
+   Lifted out of inline styles: inline wins over any stylesheet rule, so the
+   phone layout below could never take effect while these lived on the tags. */
+.hero-head{
+  position:absolute; top:0; left:0; right:0; display:flex;
+  align-items:center; justify-content:space-between; padding:28px clamp(20px,4vw,56px);
+}
+.hero-brand{ display:flex; align-items:center; gap:12px; text-decoration:none; }
+.hero-name{ font-size:13px; color:var(--cream); }
+.copy{ position:absolute; left:clamp(20px,4vw,56px); bottom:clamp(96px,13vh,132px); max-width:min(29rem,74vw); }
+.hero-flavour{ font-size:15px; color:var(--gold); margin:0 0 14px; }
+.hero-spec{ margin:0 0 26px; font-size:clamp(14px,1.05vw,16px); line-height:1.75; color:var(--cream-dim); }
+.hero-arrows{ position:absolute; right:clamp(20px,4vw,56px); bottom:clamp(96px,13vh,132px); display:flex; gap:14px; }
+.hero-rail{
+  position:absolute; left:0; right:0; bottom:clamp(30px,4.5vh,46px);
+  display:flex; justify-content:center; gap:clamp(18px,3.4vw,48px);
+  flex-wrap:wrap; padding:0 20px;
+}
+
+/* ═══════════════════════ PHONE ═══════════════════════ */
+@media(max-width:640px){
+  /* The date carried a 340px floor, which is wider than a 360px phone once the
+     7deg rotation is counted, so it overflowed and buried the copy. */
+  .date{ width:min(56vw,250px); }
+
+  /* Floating ingredients were landing on the description and the button. Fade
+     the object layers out across the lower half so the text zone stays clear.
+     The date and the flavour word keep their own layers and are unaffected. */
+  .slide .lyr:not(.datewrap):not(.wordwrap){
+    -webkit-mask-image:linear-gradient(to bottom,#000 0%,#000 40%,transparent 58%);
+    mask-image:linear-gradient(to bottom,#000 0%,#000 40%,transparent 58%);
+  }
+
+  /* Two 56px circles beside a full-width button does not fit a thumb. The rail
+     below already reaches every flavour in one tap, and swipe still works. */
+  .hero-arrows{ display:none; }
+
+  .copy{ left:20px; right:20px; bottom:84px; max-width:none; }
+  .hero-spec{ font-size:15px; margin-bottom:20px; }
+  .cta{ width:100%; justify-content:center; padding:1rem 1.25rem; }
+
+  /* 27px tall was under the 44px touch minimum */
+  /* Five flavour names will not fit one 390px line, and wrapping to two lines
+     pushed the rail up under the button. One scrolling row instead: it stays
+     44px tall, and the active flavour is scrolled into view on change. */
+  .hero-rail{
+    flex-wrap:nowrap; justify-content:flex-start; bottom:18px;
+    gap:22px; padding:0 20px; overflow-x:auto; overscroll-behavior-x:contain;
+    scrollbar-width:none; scroll-snap-type:x proximity;
+  }
+  .hero-rail::-webkit-scrollbar{ display:none; }
+  .rail-item{ flex:none; scroll-snap-align:center; }
+  .hero-brand{ padding:12px 0; }
+
+  /* footer links and the flavour page arrows were still under the touch floor */
+  .foot a{ display:inline-block; padding:.7rem 0; min-height:44px; }
+  .fp-nav button{ padding:15px 8px; min-height:44px; }
+  .rail-item{ padding:14px 4px; }
+
+  .label{ font-size:11px; }
+  .cd span{ font-size:10px; }
+  .card-price{ font-size:11px; }
+
+  /* footer links were 20px tall */
+  .foot ul{ gap:0; }
+  .foot ul li{ padding:.55rem 0; }
+  .foot a{ display:inline-block; padding:.35rem 0; }
+  .next-cta, .btn-ghost{ min-height:44px; }
+}
+
+/* ═══ the travelling date ═══ */
+#flyer{
+  position:fixed; left:0; top:0; z-index:40; pointer-events:none;
+  opacity:0; will-change:transform;
+}
+#flyer img{
+  width:100%; height:100%; object-fit:contain; display:block;
+  /* shadow is set per frame in drawFlight so it converges exactly on
+     --date-rest-shadow as the date touches down */
+  filter:var(--date-grade) var(--date-rest-shadow);
+}
+
+@media (prefers-reduced-motion:reduce){
+  *{ animation-duration:.001ms !important; animation-iteration-count:1 !important; }
+  .lyr{ transition:opacity .18s linear; transform:none !important; }
+  .lyr[style*="--o:0"]{ opacity:1; }
+}
+</style>
+</head>
+
+<body>
+
+<main class="stage" id="stage" tabindex="-1">
+
+  <!-- grounds cross-fade in place -->
+  <div id="grounds"></div>
+
+  <!-- travelling slides -->
+  <div id="slides"></div>
+
+  <div class="vignette"></div>
+
+  <!-- ═══ chrome ═══ -->
+  <div class="chrome">
+
+    <header class="hero-head">
+      <a href="#stage" class="hero-brand" aria-label="Rare Dates, back to the top">
+        <svg viewBox="0 0 100 100" width="20" height="20" fill="none" stroke="#C9A227" stroke-width="4" aria-hidden="true">
+          <path d="M50 8 C71 29, 71 71, 50 92 C29 71, 29 29, 50 8 Z"/><path d="M50 8 L50 92"/>
+        </svg>
+        <span class="wordmark hero-name">Rare Dates</span>
+      </a>
+      <!-- The Arabic toggle returns with the bilingual pass. A control that does
+           nothing is worse than no control, so it is out until it works. -->
+    </header>
+
+    <!-- copy block, bottom left -->
+    <div class="copy" id="copy">
+      <p class="wordmark hero-flavour" id="fName">Pomegranate</p>
+      <p class="hero-spec" id="fSpec"></p>
+      <a href="#" class="cta label" id="cta">
+        <svg width="15" height="15" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true">
+          <path d="M128,24A104,104,0,0,0,36.18,176.88L24.83,210.93a16,16,0,0,0,20.24,20.24l34.05-11.35A104,104,0,1,0,128,24Zm37.1,130.29-16,8a8,8,0,0,1-6.72.12c-1.6-.7-32.83-14.6-47.9-46.6a8,8,0,0,1,.6-7.92l10.4-15.6a8,8,0,0,1,9.06-3.2l.34.11a8,8,0,0,1,5.13,5.2l5.2,17.34a8,8,0,0,1-1.29,7.14l-3.1,4.13c4.62,7.9,12.2,15.48,20.1,20.1l4.13-3.1a8,8,0,0,1,7.14-1.29l17.34,5.2a8,8,0,0,1,5.31,5.47A8,8,0,0,1,165.1,154.29Z"/>
+        </svg>
+        <span>Order on WhatsApp</span>
+      </a>
+    </div>
+
+    <!-- arrows, bottom right. Phosphor CaretLeft / CaretRight paths. -->
+    <div class="hero-arrows">
+      <button class="ctrl" id="prev" aria-label="Previous flavour">
+        <svg width="17" height="17" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true"><path d="M165.66,202.34a8,8,0,0,1-11.32,11.32l-80-80a8,8,0,0,1,0-11.32l80-80a8,8,0,0,1,11.32,11.32L91.31,128Z"/></svg>
+      </button>
+      <button class="ctrl" id="next" aria-label="Next flavour">
+        <svg width="17" height="17" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true"><path d="M181.66,133.66l-80,80a8,8,0,0,1-11.32-11.32L164.69,128,90.34,53.66a8,8,0,0,1,11.32-11.32l80,80A8,8,0,0,1,181.66,133.66Z"/></svg>
+      </button>
+    </div>
+
+    <!-- flavour rail: real navigation, not decoration -->
+    <nav id="rail" class="label hero-rail" aria-label="Flavours"></nav>
+
+  </div>
+</main>
+
+<section class="collection" id="collection">
+  <div class="col-atmos" id="colAtmos" aria-hidden="true"></div>
+  <div class="col-inner">
+    <header class="col-head">
+      <h2 class="col-title">The collection</h2>
+      <p class="col-sub">Five to choose from. A sixth, chosen by you, every Monday.</p>
+    </header>
+    <div class="cards" id="cards"></div>
+  </div>
+</section>
+
+
+<section class="origin" id="origin">
+  <div class="origin-inner">
+    <div class="origin-copy">
+    <h2>The Jordan <em>Valley</em></h2>
+    <p>The lowest farmland on earth, four hundred metres below sea level, and it grows the Medjool
+    the rest of the world imports. Ours has never been on a plane. It travels about an hour to
+    reach the kitchen where it is filled by hand.</p>
+    <div class="origin-marks label">
+      <span>Jordan Valley Medjool</span><i></i>
+      <span>Belgian chocolate</span><i></i>
+      <span>Filled by hand</span>
+    </div>
+    </div>
+    <div class="origin-visual">
+      <img src="art/web/date-cluster.webp" alt="Medjool dates ripening on the palm" decoding="async">
+    </div>
+  </div>
+</section>
+
+
+
+<section class="corp" id="corporate">
+  <div class="corp-inner">
+    <h2>Twenty boxes or two hundred, with your name on the card.</h2>
+    <p>Ramadan, Eid and client gifting. One invoice, one delivery date, confirmed in writing before
+    anything is made.</p>
+    <a class="btn-ghost label" id="corpCta" href="#">Request pricing</a>
+  </div>
+</section>
+
+<footer class="foot">
+  <div class="foot-inner">
+    <div class="foot-top">
+      <div>
+        <div class="foot-mark">
+          <svg viewBox="0 0 100 100" width="26" height="26" fill="none" stroke="#C9A227" stroke-width="4" aria-hidden="true">
+            <path d="M50 8 C71 29, 71 71, 50 92 C29 71, 29 29, 50 8 Z"/><path d="M50 8 L50 92"/>
+          </svg>
+          <div>
+            <p class="wordmark" style="font-size:13px;color:var(--cream);margin:0 0 5px;">Rare Dates</p>
+            <p style="font-family:'Reem Kufi',sans-serif;font-size:12px;color:var(--gold);margin:0;">تمور نادرة</p>
+          </div>
+        </div>
+        <p class="foot-tag">Not Every Date Is Rare.</p>
+      </div>
+      <div>
+        <h3>Order</h3>
+        <ul>
+          <li><a href="#" id="footWa">WhatsApp +962 7 9878 1310</a></li>
+          <li><a href="https://www.instagram.com/raredates.jo/" target="_blank" rel="noopener">Instagram</a></li>
+          <li><a href="#corporate">Corporate gifting</a></li>
+        </ul>
+      </div>
+      <div>
+        <h3>Good to know</h3>
+        <ul>
+          <li>Amman, Jordan</li>
+          <li>JOD 15 per box</li>
+          <li>Contains nuts and dairy. Made in a kitchen that handles both.</li>
+          <li>Best within 10 days, kept cool and dry.</li>
+        </ul>
+      </div>
+    </div>
+    <div class="foot-base">
+      <p>© 2026 Rare Dates</p>
+      <p>Jordan Valley Medjool, Belgian chocolate.</p>
+    </div>
+  </div>
+</footer>
+
+<div id="flyer" aria-hidden="true"><img src="" alt=""></div>
+
+<div id="pflyer" aria-hidden="true"><img src="" alt=""></div>
+
+<div class="fpage" id="fpage" role="dialog" aria-modal="true" aria-labelledby="fpTitle">
+  <div class="fp-ground"></div>
+  <div class="fp-atmos" id="fpAtmos" aria-hidden="true"></div>
+  <div class="fp-vig" aria-hidden="true"></div>
+
+  <button class="fp-close" id="fpClose" aria-label="Close and return to the collection">
+    <svg width="17" height="17" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true"><path d="M205.66,194.34a8,8,0,0,1-11.32,11.32L128,139.31,61.66,205.66a8,8,0,0,1-11.32-11.32L116.69,128,50.34,61.66A8,8,0,0,1,61.66,50.34L128,116.69l66.34-66.35a8,8,0,0,1,11.32,11.32L139.31,128Z"/></svg>
+  </button>
+
+  <div class="fp-inner">
+    <div class="fp-stage"><img id="fpDate" src="" alt=""></div>
+    <div class="fp-copy">
+      <h1 class="fp-title" id="fpTitle"></h1>
+      <p class="fp-spec" id="fpSpec"></p>
+      <ul class="fp-parts" id="fpParts"></ul>
+      <p class="fp-note" id="fpNote"></p>
+      <div class="fp-buy">
+        <a class="cta label" id="fpOrder" href="#"><span>Order on WhatsApp</span></a>
+        <span class="fp-price" id="fpPrice"></span>
+      </div>
+    </div>
+  </div>
+
+  <nav class="fp-nav" aria-label="Flavours">
+    <button class="prev label" id="fpPrev">
+      <svg viewBox="0 0 256 256" fill="currentColor" aria-hidden="true"><path d="M165.66,202.34a8,8,0,0,1-11.32,11.32l-80-80a8,8,0,0,1,0-11.32l80-80a8,8,0,0,1,11.32,11.32L91.31,128Z"/></svg>
+      <span id="fpPrevName"></span>
+    </button>
+    <span class="dot" aria-hidden="true"></span>
+    <button class="next label" id="fpNext">
+      <span id="fpNextName"></span>
+      <svg viewBox="0 0 256 256" fill="currentColor" aria-hidden="true"><path d="M181.66,133.66l-80,80a8,8,0,0,1-11.32-11.32L164.69,128,90.34,53.66a8,8,0,0,1,11.32-11.32l80,80A8,8,0,0,1,181.66,133.66Z"/></svg>
+    </button>
+  </nav>
+</div>
+
+
+<div aria-live="polite" class="sr-only" id="live" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);"></div>
+
+<script>
+/* ═══════════════════════ CONFIG ═══════════════════════
+   Declared first: the card builder and the flavour pages both read these, and
+   a const used above its declaration is a temporal dead zone error, not a
+   hoisted undefined. */
+const WHATSAPP = "962798781310";
+const PRICE = "JOD 15";
+const waText = "Hello Rare Dates, I would like to order.";
+const waJoin = "Hello Rare Dates, I want a say in the next flavour.";
+
+/* ═══════════════════════ THE FIVE WORLDS ═══════════════════════
+   Gold and cream stay constant across all five. Only ground, bloom
+   and objects re-theme, so the brand holds while the stage transforms. */
+const FLAVOURS = [
+  { key:'pomegranate', name:'Pomegranate', word:'POMEGRANATE',
+    ground:'#170509', bloom:'#5C1327', accent:'#C9445A',
+    date:'art/web/date-pomegranate.webp',
+    objs:['art/web/pom-whole.webp','art/web/pom-half.webp','art/web/pom-seeds.webp'],
+    spec:'Pomegranate filling, topped with fresh seeds. Dark or white Belgian chocolate.' },
+
+  { key:'chocolate', name:'Chocolate', word:'CHOCOLATE',
+    ground:'#120A07', bloom:'#3D2317', accent:'#8B5A3C',
+    date:'art/web/date-chocolate.webp',
+    objs:['art/web/choc-shards.webp','art/web/cocoa-bean.webp','art/web/choc-curl.webp'],
+    spec:'Dark Belgian chocolate, twice. Around the date and through the filling.' },
+
+  { key:'coffee', name:'Coffee', word:'COFFEE',
+    ground:'#150D06', bloom:'#4A2C14', accent:'#C98F4A',
+    date:'art/web/date-coffee.webp',
+    objs:['art/web/coffee-beans.webp','art/web/coffee-bean.webp','art/web/choc-shards.webp'],
+    spec:'Ground coffee folded into a smooth filling. Dark Belgian chocolate.' },
+
+  { key:'pistachio', name:'Pistachio', word:'PISTACHIO',
+    ground:'#090D05', bloom:'#2A3714', accent:'#A8BF6A',
+    date:'art/web/date-pistachio.webp',
+    objs:['art/web/pist-kernels.webp','art/web/pist-shell.webp','art/web/pist-crushed.webp'],
+    spec:'Roasted pistachios, ground into a smooth filling. Dark Belgian chocolate.' },
+
+  { key:'lemon', name:'Lemon', word:'LEMON',
+    ground:'#100C03', bloom:'#41360B', accent:'#D8D264',
+    date:'art/web/date-lemon.webp',
+    objs:['art/web/lemon-slice.webp','art/web/lemon-half.webp','art/web/lemon-zest.webp'],
+    spec:'Lemon cream with fresh zest, finished with thin lemon slices. Dark or white.' },
+];
+
+/* Object beds. Speeds above 1 overshoot (foreground), below 1 linger (distance).
+   Hand-placed rather than randomised so each composition is actually composed. */
+const BEDS = [
+  [ {x:'15%',y:'26%',s:150,sp:1.55,b:'0px',r:-14,d:'9s', dl:'-1s',   a:0},
+    {x:'82%',y:'21%',s:118,sp:1.35,b:'1px',r:19, d:'11s',dl:'-4s',   a:2},
+    {x:'73%',y:'74%',s:196,sp:1.7, b:'2px',r:7,  d:'10s',dl:'-2.5s', a:1},
+    {x:'26%',y:'79%',s:104,sp:1.25,b:'1px',r:-8, d:'12s',dl:'-6s',   a:2},
+    {x:'50%',y:'12%',s:78, sp:.45, b:'4px',r:11, d:'14s',dl:'-3s',   a:0} ],
+
+  [ {x:'20%',y:'29%',s:132,sp:1.45,b:'0px',r:12, d:'10s',dl:'-2s',   a:0},
+    {x:'80%',y:'33%',s:172,sp:1.6, b:'1px',r:-18,d:'12s',dl:'-5s',   a:2},
+    {x:'64%',y:'80%',s:110,sp:1.3, b:'1px',r:5,  d:'9s', dl:'-1.5s', a:1},
+    {x:'33%',y:'73%',s:146,sp:1.5, b:'2px',r:-10,d:'13s',dl:'-7s',   a:2},
+    {x:'89%',y:'63%',s:72, sp:.4,  b:'4px',r:16, d:'15s',dl:'-2s',   a:1} ],
+
+  [ {x:'13%',y:'34%',s:126,sp:1.4, b:'0px',r:-12,d:'11s',dl:'-3s',   a:1},
+    {x:'84%',y:'25%',s:158,sp:1.55,b:'1px',r:17, d:'10s',dl:'-6s',   a:0},
+    {x:'70%',y:'78%',s:184,sp:1.65,b:'2px',r:-5, d:'12s',dl:'-1s',   a:2},
+    {x:'30%',y:'75%',s:96, sp:1.2, b:'1px',r:9,  d:'14s',dl:'-4.5s', a:1},
+    {x:'46%',y:'14%',s:70, sp:.42, b:'4px',r:-7, d:'16s',dl:'-8s',   a:1} ],
+
+  [ {x:'17%',y:'23%',s:138,sp:1.5, b:'0px',r:14, d:'9s', dl:'-2s',   a:0},
+    {x:'83%',y:'37%',s:164,sp:1.6, b:'1px',r:-16,d:'11s',dl:'-5.5s', a:2},
+    {x:'75%',y:'77%',s:108,sp:1.35,b:'1px',r:6,  d:'13s',dl:'-3s',   a:1},
+    {x:'25%',y:'73%',s:190,sp:1.7, b:'2px',r:-10,d:'10s',dl:'-7s',   a:2},
+    {x:'55%',y:'11%',s:74, sp:.44, b:'4px',r:19, d:'15s',dl:'-1s',   a:1} ],
+
+  [ {x:'21%',y:'31%',s:144,sp:1.45,b:'0px',r:-13,d:'12s',dl:'-4s',   a:0},
+    {x:'81%',y:'24%',s:100,sp:1.3, b:'1px',r:18, d:'10s',dl:'-1.5s', a:2},
+    {x:'72%',y:'79%',s:178,sp:1.65,b:'2px',r:-4, d:'11s',dl:'-6s',   a:1},
+    {x:'29%',y:'76%',s:122,sp:1.4, b:'1px',r:11, d:'14s',dl:'-3.5s', a:2},
+    {x:'51%',y:'13%',s:68, sp:.43, b:'4px',r:-8, d:'16s',dl:'-9s',   a:0} ],
+];
+
+const groundsEl = document.getElementById('grounds');
+const slidesEl  = document.getElementById('slides');
+const railEl    = document.getElementById('rail');
+const copyEl    = document.getElementById('copy');
+const fName     = document.getElementById('fName');
+const fSpec     = document.getElementById('fSpec');
+const liveEl    = document.getElementById('live');
+
+/* ── build ── */
+FLAVOURS.forEach((f, i) => {
+  const vars = `--ground:${f.ground}; --bloom:${f.bloom}; --accent:${f.accent};`;
+
+  const g = document.createElement('div');
+  g.className = 'ground';
+  g.style.cssText = vars;
+  groundsEl.appendChild(g);
+
+  const backObjs  = BEDS[i].map(function(o,k){return {o:o,k:k};}).filter(function(x){return x.o.sp < 1;});
+  const frontObjs = BEDS[i].map(function(o,k){return {o:o,k:k};}).filter(function(x){return x.o.sp >= 1;});
+  const render = function(list){ return list.map(function(it){ var o = it.o; return ''
+    + '<div class="obj" style="--x:' + o.x + '; --y:' + o.y + '; --size:' + o.s + 'px; --blur:' + o.b + ';">'
+    +   '<div class="obj-float" style="--dur:' + o.d + '; --delay:' + o.dl + ';">'
+    +     '<img class="obj-art" style="--rot:' + o.r + 'deg;" src="' + f.objs[o.a] + '" alt="" decoding="async">'
+    +   '</div>'
+    + '</div>'; }).join(''); };
+
+  const s = document.createElement('div');
+  s.className = 'slide';
+  s.style.cssText = vars;
+  s.innerHTML = `
+    <div class="lyr" style="--sp:.42">${render(backObjs)}</div>
+    <div class="lyr wordwrap" style="--sp:.66">
+      <svg class="word" data-word="${f.word}" aria-hidden="true"><text>${f.word}</text></svg>
+    </div>
+    <div class="lyr datewrap" style="--sp:1">
+      <div class="date"><img src="${f.date}" alt="${f.name}" decoding="async"></div>
+    </div>
+    <div class="lyr" style="--sp:1.55">${render(frontObjs)}</div>
+  `;
+  slidesEl.appendChild(s);
+
+  const b = document.createElement('button');
+  b.className = 'rail-item';
+  b.textContent = f.name;
+  b.addEventListener('click', () => go(i));
+  railEl.appendChild(b);
+});
+
+/* Auto-fit each word to the same optical width. Word lengths run from
+   LEMON to POMEGRANATE, so a fixed size would make them wildly unequal. */
+function fitWords(){
+  document.querySelectorAll('.word').forEach(svg => {
+    const t = svg.querySelector('text');
+    t.setAttribute('font-size','100');
+    t.setAttribute('x','0'); t.setAttribute('y','0');
+    const bb = t.getBBox();
+    const pad = bb.height * 0.06;
+    svg.setAttribute('viewBox', `${bb.x - pad} ${bb.y - pad} ${bb.width + pad*2} ${bb.height + pad*2}`);
+    svg.setAttribute('preserveAspectRatio','xMidYMid meet');
+  });
+}
+
+/* ── state ── */
+const grounds = [...groundsEl.children];
+const slides  = [...slidesEl.children];
+const rails   = [...railEl.children];
+let cur = 0, busy = false;
+
+function paint(){
+  slides.forEach((s, i) => {
+    const o = i - cur;
+    s.querySelectorAll('.lyr').forEach(l => {
+      l.style.setProperty('--o', o);
+      l.style.setProperty('--vis', Math.max(0, 1 - Math.abs(o)));
+    });
+  });
+  grounds.forEach((g, i) => g.classList.toggle('live', i === cur));
+  rails.forEach((r, i) => r.setAttribute('aria-current', i === cur));
+
+  const f = FLAVOURS[cur];
+  copyEl.classList.add('swapping');
+  setTimeout(() => {
+    fName.textContent = f.name;
+    fSpec.textContent = f.spec;
+    copyEl.classList.remove('swapping');
+  }, 300);
+  liveEl.textContent = f.name;
+  if (typeof drawFlight === 'function'){ flightP = -1; drawFlight(); }
+}
+
+function go(i){
+  if (busy || i === cur) return;
+  busy = true;
+  cur = (i + FLAVOURS.length) % FLAVOURS.length;
+  paint();
+  setTimeout(() => { busy = false; }, 620);
+}
+const step = d => go(cur + d);
+
+/* ── controls ── */
+document.getElementById('next').addEventListener('click', () => step(1));
+document.getElementById('prev').addEventListener('click', () => step(-1));
+
+addEventListener('keydown', e => {
+  if (e.key === 'ArrowRight') step(1);
+  if (e.key === 'ArrowLeft')  step(-1);
+});
+
+let dragX = null;
+const stage = document.getElementById('stage');
+stage.addEventListener('pointerdown', e => { dragX = e.clientX; });
+stage.addEventListener('pointerup', e => {
+  if (dragX === null) return;
+  const dx = e.clientX - dragX;
+  if (Math.abs(dx) > 55) step(dx < 0 ? 1 : -1);
+  dragX = null;
+});
+
+/* ── go ── */
+(document.fonts ? document.fonts.ready : Promise.resolve()).then(() => {
+  document.body.classList.add('booting');
+  fitWords();
+  paint();
+  requestAnimationFrame(() => requestAnimationFrame(() => {
+    document.body.classList.remove('booting');
+    document.body.dataset.ready = '1';
+  }));
+});
+addEventListener('resize', fitWords);
+
+
+/* ═══════════════════════ THE COLLECTION ═══════════════════════
+   Six cards. Five flavours plus the weekly drop. The card whose flavour is
+   live in the hero sits empty, because its date is still up there. Scrolling
+   flies that date down into its slot and completes the set. */
+
+const CARD_ROT = [-4, 3, -2, 5, -3];   /* each date rests at its own angle */
+const DRIFT = [
+  { fd:'11s',   dx1:'5px',  dy1:'-12px', dr1:'1.2deg',  dx2:'-4px', dy2:'8px',   dr2:'-0.9deg' },
+  { fd:'13.5s', dx1:'-6px', dy1:'-9px',  dr1:'-1.4deg', dx2:'5px',  dy2:'10px',  dr2:'1.1deg'  },
+  { fd:'9.5s',  dx1:'4px',  dy1:'-14px', dr1:'0.9deg',  dx2:'-6px', dy2:'6px',   dr2:'-1.3deg' },
+  { fd:'15s',   dx1:'-5px', dy1:'-11px', dr1:'1.5deg',  dx2:'6px',  dy2:'9px',   dr2:'-1deg'   },
+  { fd:'12.5s', dx1:'6px',  dy1:'-10px', dr1:'-1.1deg', dx2:'-5px', dy2:'11px',  dr2:'1.3deg'  },
+];
+const cardsEl = document.getElementById('cards');
+const flyer   = document.getElementById('flyer');
+const flyerImg = flyer.querySelector('img');
+
+FLAVOURS.forEach(function(f, i){
+  const el = document.createElement('article');
+  el.className = 'card';
+  el.dataset.i = i;
+  el.style.setProperty('--c-accent', f.accent);
+  el.style.setProperty('--c-rot', CARD_ROT[i] + 'deg');
+  const d = DRIFT[i];
+  el.style.setProperty('--fd', d.fd);
+  el.style.setProperty('--dx1', d.dx1); el.style.setProperty('--dy1', d.dy1); el.style.setProperty('--dr1', d.dr1);
+  el.style.setProperty('--dx2', d.dx2); el.style.setProperty('--dy2', d.dy2); el.style.setProperty('--dr2', d.dr2);
+  el.innerHTML =
+    '<div class="card-slot"><div class="card-float">' +
+      '<img src="' + f.date + '" alt="' + f.name + '" decoding="async">' +
+    '</div></div>' +
+    '<h3 class="card-name"><a class="card-link" href="#/' + f.key + '">' + f.name + '</a></h3>' +
+    '<p class="card-spec">' + f.spec + '</p>' +
+    '<p class="card-price label">' + PRICE + '</p>';
+  cardsEl.appendChild(el);
+});
+
+/* the weekly drop */
+const nextCard = document.createElement('article');
+nextCard.className = 'card card-next';
+nextCard.style.setProperty('--c-accent', '#C9A227');
+nextCard.innerHTML =
+  '<h3 class="next-title">The sixth</h3>' +
+  '<div class="card-slot"><div class="next-stage">' +
+    '<img class="next-blur" src="art/web/date-lemon.webp" alt="" aria-hidden="true" decoding="async">' +
+    '<span class="next-q" aria-hidden="true">?</span>' +
+  '</div></div>' +
+  '<p class="next-lead">You decide what it is.</p>' +
+  '<p class="next-note">One new flavour every Monday, picked by the people who eat them. ' +
+  'We make a single batch. When it is finished it is not made again.</p>' +
+  '<div class="cd" id="cd">' +
+    '<div><b>0</b><span>days</span></div><div><b>0</b><span>hrs</span></div>' +
+    '<div><b>0</b><span>min</span></div><div><b>0</b><span>sec</span></div>' +
+  '</div>' +
+  '<a class="next-cta label" id="nextCta" href="#">' +
+    '<span>Have your say</span>' +
+    '<svg width="13" height="13" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true">' +
+      '<path d="M221.66,133.66l-72,72a8,8,0,0,1-11.32-11.32L196.69,136H40a8,8,0,0,1,0-16H196.69L138.34,61.66a8,8,0,0,1,11.32-11.32l72,72A8,8,0,0,1,221.66,133.66Z"/>' +
+    '</svg>' +
+  '</a>';
+
+cardsEl.appendChild(nextCard);
+
+const cardEls = [].slice.call(cardsEl.querySelectorAll('.card'));
+
+/* ── countdown to the next drop: Monday 00:00 local ── */
+
+(function wireWhatsApp(){
+  const order = document.getElementById('cta');
+  if (order){
+    order.href = 'https://wa.me/' + WHATSAPP + '?text=' + encodeURIComponent(waText);
+    order.target = '_blank'; order.rel = 'noopener';
+  }
+  const corp = document.getElementById('corpCta');
+  if (corp){
+    corp.href = 'https://wa.me/' + WHATSAPP + '?text=' +
+      encodeURIComponent('Hello Rare Dates, I am asking about corporate gifting. Quantity and date below.');
+    corp.target = '_blank'; corp.rel = 'noopener';
+  }
+  /* fpOrder is rewritten per flavour when a page opens, but give it a working
+     destination from the start so it is never a dead href. */
+  const fpo = document.getElementById('fpOrder');
+  if (fpo){
+    fpo.href = 'https://wa.me/' + WHATSAPP + '?text=' + encodeURIComponent(waText);
+    fpo.target = '_blank'; fpo.rel = 'noopener';
+  }
+  const foot = document.getElementById('footWa');
+  if (foot){
+    foot.href = 'https://wa.me/' + WHATSAPP + '?text=' + encodeURIComponent(waText);
+    foot.target = '_blank'; foot.rel = 'noopener';
+  }
+  const join = document.getElementById('nextCta');
+  if (join){
+    join.href = 'https://wa.me/' + WHATSAPP + '?text=' + encodeURIComponent(waJoin);
+    join.target = '_blank'; join.rel = 'noopener';
+  }
+})();
+
+const cdEl = document.getElementById('cd');
+function nextDrop(){
+  const n = new Date();
+  const d = new Date(n.getFullYear(), n.getMonth(), n.getDate(), 0, 0, 0, 0);
+  let add = (8 - d.getDay()) % 7;      /* 1 = Monday */
+  if (add === 0) add = 7;
+  d.setDate(d.getDate() + add);
+  return d;
+}
+function tickCountdown(){
+  let ms = nextDrop() - new Date();
+  if (ms < 0) ms = 0;
+  const sec = Math.floor(ms / 1000);
+  const v = [Math.floor(sec / 86400), Math.floor(sec / 3600) % 24,
+             Math.floor(sec / 60) % 60, sec % 60];
+  const b = cdEl.querySelectorAll('b');
+  for (let i = 0; i < 4; i++){
+    const t = i ? String(v[i]).padStart(2, '0') : String(v[i]);
+    if (b[i].textContent !== t) b[i].textContent = t;
+  }
+}
+tickCountdown();
+setInterval(tickCountdown, 1000);
+
+/* ── the flight ──────────────────────────────────────────────────────────
+   Source and destination are both measured live in viewport space, so the
+   date starts exactly where the hero left it and lands exactly in its slot
+   no matter where the page has been scrolled to.
+
+   The path is deliberately not a lerp. Three things give it life:
+     - a lateral swing that peaks mid-flight and returns to zero
+     - a tumble that overshoots the resting angle before settling
+     - a scale dip, so it reads as travelling through depth rather than across glass
+   sin(p * PI) is the shape behind all three: zero at both ends, one in the middle. */
+
+/* One date per slide. querySelector would always hand back slide 0, which is
+   parked off-canvas whenever another flavour is live: the flight would then
+   launch from thousands of pixels to the left. */
+const heroDates = slides.map(function(sl){ return sl.querySelector('.date'); });
+function syncFlyerArt(){ const src = FLAVOURS[cur].date; if (flyerImg.getAttribute('src') !== src) flyerImg.src = src; }
+let flightP = -1;
+
+const easeInOutCubic = t => t < .5 ? 4*t*t*t : 1 - Math.pow(-2*t + 2, 3) / 2;
+const easeOutBack    = t => 1 + 2.2 * Math.pow(t - 1, 3) + 1.4 * Math.pow(t - 1, 2);
+const lerp = (a, b, t) => a + (b - a) * t;
+
+/* the box an object-fit:contain image actually paints into */
+function contained(box, natW, natH){
+  const sc = Math.min(box.width / natW, box.height / natH);
+  const w = natW * sc, h = natH * sc;
+  return { x: box.left + (box.width - w) / 2, y: box.top + (box.height - h) / 2,
+           width: w, height: h };
+}
+
+/* Progress runs from the very first pixel of scroll to the moment the target
+   slot reaches its resting line. Measuring it against the slot's viewport
+   position instead meant a bottom-row date stood still for most of a viewport
+   before it moved, because its card was nowhere near the trigger band yet.
+   Anchoring the start at scroll zero makes the date begin leaving immediately,
+   while the end still tracks the card, so each one takes as long as it needs. */
+const FLIGHT_REST = 0.70;   /* slot centre lands here, as a fraction of viewport */
+
+function flightProgress(slotRect){
+  const y = window.scrollY;
+  const absCentre = slotRect.top + y + slotRect.height / 2;
+  const end = Math.max(1, absCentre - window.innerHeight * FLIGHT_REST);
+  return Math.max(0, Math.min(1, y / end));
+}
+
+/* A large object tracking across the page is exactly what reduced-motion asks
+   us not to do. For those users the collection is simply always complete. */
+const noMotion = matchMedia('(prefers-reduced-motion: reduce)');
+
+function drawFlight(){
+  if (typeof fpOpen !== 'undefined' && fpOpen !== -1) return;   /* page is up */
+  if (noMotion.matches){
+    cardEls.forEach(function(c){ c.dataset.waiting = '0'; });
+    flyer.style.opacity = '0';
+    heroDates.forEach(function(d){ d.style.opacity = ''; });
+    flightP = -1;
+    return;
+  }
+  syncFlyerArt();
+  const card = cardEls[cur];
+  if (!card) return;
+  const slot = card.querySelector('.card-slot');
+  const p = flightProgress(slot.getBoundingClientRect());
+
+  /* the waiting card only waits while the date is still in the air */
+  const landed = p >= 0.999;
+  window.__flight = { p:p, cur:cur, landed:landed };
+  cardEls.forEach(function(c, i){
+    c.dataset.waiting = (!landed && i === cur) ? '1' : '0';
+  });
+
+  const heroDate = heroDates[cur];
+  if (p <= 0.001 || landed){
+    if (flightP !== -1){
+      flyer.style.opacity = '0';
+      heroDates.forEach(function(d){ d.style.opacity = ''; });
+      flightP = -1;
+    }
+    return;
+  }
+
+  const nat = flyerImg.naturalWidth ? flyerImg : heroDate.querySelector('img');
+  const nw = nat.naturalWidth || 1, nh = nat.naturalHeight || 1;
+  const a = contained(heroDate.getBoundingClientRect(), nw, nh);
+  const b = contained(slot.getBoundingClientRect(), nw, nh);
+  if (!a.width || !b.width) return;
+
+  if (flightP === -1){
+    flyer.style.opacity = '1';
+    heroDates.forEach(function(d){ d.style.opacity = ''; });
+    heroDate.style.opacity = '0';
+  }
+  flyer.style.width  = a.width + 'px';
+  flyer.style.height = a.height + 'px';
+  flightP = p;
+
+  /* Both ends of the path scroll with the page, so the on-screen vertical is
+     heroY + f(p)*travel - p*scrollRange. Any easing whose slope dips below
+     scrollRange/travel (about 0.9 here) makes the date swim back UP the screen
+     mid-flight. easeInOutCubic dips to zero at both ends, which is why the
+     lower row reversed direction three times.
+
+     f stays within 10% of linear: enough to feel paced, never enough to
+     reverse. The character lives in the swing, the tumble and the scale. */
+  const fp = p - 0.10 * Math.sin(2 * Math.PI * p) / (2 * Math.PI);
+  const ey = fp;
+  const ez = p * p * (3 - 2 * p);          /* free to ease: scale and shadow */
+  const bulge = Math.sin(p * Math.PI);
+
+  const ax = a.x + a.width / 2,  ay = a.y + a.height / 2;
+  const bx = b.x + b.width / 2,  by = b.y + b.height / 2;
+
+  /* swing away from the direction of travel first, then come back */
+  const dx = bx - ax;
+  const swing = (dx >= 0 ? -1 : 1) * Math.min(170, Math.abs(dx) * 0.42 + 70);
+
+  const cx = lerp(ax, bx, ey) + bulge * swing;
+  const cy = lerp(ay, by, ey) - bulge * 15;          /* hangs a moment before dropping */
+  const sc = lerp(1, b.width / a.width, ez) * (1 - 0.07 * bulge);
+  const rot = lerp(-7, CARD_ROT[cur], easeOutBack(p)) + bulge * 15;
+
+  /* airborne dates carry a longer shadow; it lands exactly on the resting
+     value so the swap to the card image is invisible */
+  const shY = lerp(30, 18, ez), shB = lerp(48, 26, ez), shA = lerp(0.72, 0.6, ez);
+  flyerImg.style.filter = 'var(--date-grade) drop-shadow(0 ' + shY.toFixed(2) +
+    'px ' + shB.toFixed(2) + 'px rgba(6,2,4,' + shA.toFixed(3) + '))';
+
+  flyer.style.transform =
+    'translate3d(' + (cx - a.width / 2) + 'px,' + (cy - a.height / 2) + 'px,0)' +
+    ' rotate(' + rot + 'deg) scale(' + sc + ')';
+}
+
+/* rAF gated by visibility. No scroll listener: it would fire on every frame
+   of every scroll on the whole document, including where nothing is flying. */
+let flying = false;
+function loop(){
+  if (!flying) return;
+  drawFlight();
+  requestAnimationFrame(loop);
+}
+/* An observer callback only carries the entries whose intersection CHANGED.
+   Testing `entries.some(...)` therefore reports "nothing visible" the moment
+   the hero scrolls out, even while the collection is still on screen, which
+   froze the date in mid air. Track each target's state and OR them. */
+const visible = new Map();
+const flightIO = new IntersectionObserver(function(entries){
+  entries.forEach(function(e){ visible.set(e.target, e.isIntersecting); });
+  let on = false;
+  visible.forEach(function(v){ if (v) on = true; });
+  if (on && !flying){ flying = true; requestAnimationFrame(loop); }
+  else if (!on && flying){ flying = false; drawFlight(); }
+}, { threshold: 0 });
+flightIO.observe(document.getElementById('stage'));
+flightIO.observe(document.getElementById('collection'));
+
+
+/* ── reveal, and the drifting ingredients behind the grid ── */
+const ATMOS = [
+  { src:'art/web/pom-whole.webp',    x:'6%',  y:'14%', s:'150px', o:'.13', b:'3px',  fd:'17s' },
+  { src:'art/web/coffee-beans.webp', x:'88%', y:'9%',  s:'120px', o:'.11', b:'4px',  fd:'21s' },
+  { src:'art/web/pist-kernels.webp', x:'92%', y:'62%', s:'160px', o:'.10', b:'5px',  fd:'19s' },
+  { src:'art/web/choc-shards.webp',  x:'3%',  y:'68%', s:'175px', o:'.12', b:'4px',  fd:'23s' },
+  { src:'art/web/lemon-slice.webp',  x:'44%', y:'86%', s:'110px', o:'.09', b:'6px',  fd:'25s' },
+  { src:'art/web/pom-seeds.webp',    x:'70%', y:'36%', s:'95px',  o:'.08', b:'6px',  fd:'15s' },
+];
+const atmosEl = document.getElementById('colAtmos');
+ATMOS.forEach(function(a, i){
+  const im = new Image();
+  im.src = a.src; im.alt = ''; im.decoding = 'async';
+  im.style.cssText = '--x:' + a.x + ';--y:' + a.y + ';--s:' + a.s +
+                     ';--o:' + a.o + ';--b:' + a.b + ';--fd:' + a.fd +
+                     ';--dx1:9px;--dy1:-16px;--dr1:2deg;--dx2:-8px;--dy2:12px;--dr2:-2deg';
+  atmosEl.appendChild(im);
+});
+
+const revealIO = new IntersectionObserver(function(entries){
+  entries.forEach(function(e){
+    if (e.isIntersecting){ e.target.classList.add('in'); revealIO.unobserve(e.target); }
+  });
+}, { threshold:.08, rootMargin:'0px 0px -4% 0px' });
+revealIO.observe(document.querySelector('.col-head'));
+cardEls.forEach(function(c){ revealIO.observe(c); });
+
+/* what each flavour is actually made of. Named components rather than claims
+   about taste, per voice.md: the reader imagines better than copy can promise. */
+const DETAIL = {
+  pomegranate: {
+    parts: ['Jordan Valley Medjool', 'Pomegranate cream', 'Fresh pomegranate seeds', 'Dark or white Belgian chocolate'],
+    note: 'The seeds go on last so they still break when you bite. Dark chocolate for the contrast, white if you want it sweeter.' },
+  chocolate: {
+    parts: ['Jordan Valley Medjool', 'Dark chocolate ganache', 'Cocoa', 'Dark Belgian chocolate'],
+    note: 'Chocolate twice. A ganache through the middle and a dark shell around the outside.' },
+  coffee: {
+    parts: ['Jordan Valley Medjool', 'Coffee cream', 'Two roasted coffee beans', 'Dark Belgian chocolate'],
+    note: 'The coffee is ground into the cream rather than brushed over it. The two beans on top tell you which one you picked up.' },
+  pistachio: {
+    parts: ['Jordan Valley Medjool', 'Pistachio cream', 'Chopped roasted pistachios', 'Dark Belgian chocolate'],
+    note: 'Pistachios roasted, then ground until they turn to cream. More of them chopped over the top for the texture the cream loses.' },
+  lemon: {
+    parts: ['Jordan Valley Medjool', 'Lemon cream', 'Fresh lemon zest', 'White Belgian chocolate'],
+    note: 'Zest goes through the cream and over the top. White chocolate, because dark would bury it.' },
+};
+
+/* ═══════════════════════ FLAVOUR PAGE ═══════════════════════ */
+const fpage   = document.getElementById('fpage');
+const fpDate  = document.getElementById('fpDate');
+const fpAtmos = document.getElementById('fpAtmos');
+const pflyer  = document.getElementById('pflyer');
+const pflyerImg = pflyer.querySelector('img');
+let fpOpen = -1, lastFocus = null, scrollLock = 0;
+
+function fillPage(i){
+  const f = FLAVOURS[i], d = DETAIL[f.key];
+  fpage.style.setProperty('--ground', f.ground);
+  fpage.style.setProperty('--bloom', f.bloom);
+  fpage.style.setProperty('--accent', f.accent);
+  document.getElementById('fpTitle').textContent = f.name;
+  document.getElementById('fpSpec').textContent = f.spec;
+  document.getElementById('fpNote').textContent = d.note;
+  document.getElementById('fpParts').innerHTML = d.parts.map(function(t){
+    return '<li><svg viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="9" aria-hidden="true">' +
+           '<path d="M50 8 C71 29, 71 71, 50 92 C29 71, 29 29, 50 8 Z"/></svg>' + t + '</li>';
+  }).join('');
+  fpDate.src = f.date; fpDate.alt = f.name;
+  document.getElementById('fpPrice').textContent = PRICE + ' per box';
+
+  const order = document.getElementById('fpOrder');
+  order.href = 'https://wa.me/' + WHATSAPP + '?text=' +
+    encodeURIComponent('Hello Rare Dates, I would like to order the ' + f.name + ' date.');
+  order.target = '_blank'; order.rel = 'noopener';
+
+  const prev = (i - 1 + FLAVOURS.length) % FLAVOURS.length;
+  const next = (i + 1) % FLAVOURS.length;
+  document.getElementById('fpPrevName').textContent = FLAVOURS[prev].name;
+  document.getElementById('fpNextName').textContent = FLAVOURS[next].name;
+  document.getElementById('fpPrev').onclick = function(){ goFlavour(prev); };
+  document.getElementById('fpNext').onclick = function(){ goFlavour(next); };
+
+  fpAtmos.innerHTML = '';
+  [{x:'6%',y:'16%',s:'170px',o:'.17',b:'3px',fd:'18s'},
+   {x:'88%',y:'22%',s:'130px',o:'.13',b:'4px',fd:'22s'},
+   {x:'80%',y:'74%',s:'190px',o:'.12',b:'5px',fd:'26s'}].forEach(function(a, k){
+    const im = new Image();
+    im.src = f.objs[k % f.objs.length]; im.alt = ''; im.decoding = 'async';
+    im.style.cssText = '--x:' + a.x + ';--y:' + a.y + ';--s:' + a.s + ';--o:' + a.o +
+      ';--b:' + a.b + ';--fd:' + a.fd +
+      ';--dx1:10px;--dy1:-18px;--dr1:2deg;--dx2:-9px;--dy2:13px;--dr2:-2deg';
+    fpAtmos.appendChild(im);
+  });
+}
+
+/* FLIP: the card's date and the page's date are the same object, so measure
+   both and carry it across rather than cross-fading two pictures. */
+function flyIntoPage(srcRect){
+  const ref = fpDate.naturalWidth ? fpDate
+            : (cardEls[fpOpen] && cardEls[fpOpen].querySelector('.card-slot img'));
+  const nw = (ref && ref.naturalWidth) || 1000;
+  const nh = (ref && ref.naturalHeight) || 1100;
+  const dst = contained(fpDate.getBoundingClientRect(), nw, nh);
+  if (!srcRect || !dst.width){ fpDate.style.opacity = ''; return; }
+
+  pflyerImg.src = fpDate.src;
+  pflyer.style.transition = 'none';
+  pflyer.style.width = srcRect.width + 'px';
+  pflyer.style.height = srcRect.height + 'px';
+  pflyer.style.transform = 'translate3d(' + srcRect.x + 'px,' + srcRect.y + 'px,0) scale(1)';
+  pflyer.style.opacity = '1';
+  fpDate.style.opacity = '0';
+
+  requestAnimationFrame(function(){ requestAnimationFrame(function(){
+    pflyer.style.transition = 'transform .82s var(--ease)';
+    const sc = dst.width / srcRect.width;
+    const cx = dst.x + dst.width / 2 - srcRect.width / 2;
+    const cy = dst.y + dst.height / 2 - srcRect.height / 2;
+    pflyer.style.transform = 'translate3d(' + cx + 'px,' + cy + 'px,0) scale(' + sc + ')';
+    setTimeout(function(){
+      fpDate.style.opacity = '';
+      pflyer.style.opacity = '0';
+    }, 820);
+  }); });
+}
+
+function cardDateRect(i){
+  const card = cardEls[i];
+  if (!card) return null;
+  const img = card.querySelector('.card-slot img');
+  if (!img || !img.naturalWidth) return null;
+  return contained(img.getBoundingClientRect(), img.naturalWidth, img.naturalHeight);
+}
+
+function openFlavour(i, srcRect){
+  const first = fpOpen === -1;
+  if (first){
+    lastFocus = document.activeElement;
+    scrollLock = window.scrollY;
+    document.body.classList.add('locked');
+  }
+  fpOpen = i;
+  fillPage(i);
+  fpage.classList.add('open');
+  requestAnimationFrame(function(){ fpage.classList.add('in'); });
+  if (first) flyIntoPage(srcRect); else fpDate.style.opacity = '';
+  document.getElementById('fpClose').focus({ preventScroll: true });
+}
+
+function closeFlavour(){
+  if (fpOpen === -1) return;
+  fpOpen = -1;
+  fpage.classList.remove('open', 'in');
+  pflyer.style.opacity = '0';
+  document.body.classList.remove('locked');
+  window.scrollTo(0, scrollLock);
+  if (lastFocus) lastFocus.focus({ preventScroll: true });
+}
+
+function goFlavour(i){ location.hash = '#/' + FLAVOURS[i].key; }
+
+/* hash routing keeps every flavour linkable and the back button working */
+function routeFromHash(){
+  const m = /^#\/([a-z]+)$/.exec(location.hash || '');
+  const i = m ? FLAVOURS.findIndex(function(f){ return f.key === m[1]; }) : -1;
+  if (i === -1) closeFlavour();
+  else if (i !== fpOpen) openFlavour(i, fpOpen === -1 ? cardDateRect(i) : null);
+}
+addEventListener('hashchange', routeFromHash);
+
+document.getElementById('fpClose').addEventListener('click', function(){ history.back(); });
+addEventListener('keydown', function(e){
+  if (fpOpen === -1) return;
+  if (e.key === 'Escape') history.back();
+  if (e.key === 'ArrowRight') goFlavour((fpOpen + 1) % FLAVOURS.length);
+  if (e.key === 'ArrowLeft')  goFlavour((fpOpen - 1 + FLAVOURS.length) % FLAVOURS.length);
+});
+
+routeFromHash();
+
+addEventListener('resize', function(){ flightP = -1; drawFlight(); });
+drawFlight();
+
+</script>
+</body>
+</html>

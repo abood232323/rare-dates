@@ -1,0 +1,12 @@
+# Working files, not part of the site
+temporary screenshots/
+
+# Generation and keying intermediates. art/web/ holds the optimised assets the
+# site actually loads (1.6MB); these two are 147MB of sources that can be
+# regenerated from the prompts and rebuilt with art/key.py + art/largest.py.
+art/raw/
+art/cut/
+
+node_modules/
+.DS_Store
+Thumbs.db

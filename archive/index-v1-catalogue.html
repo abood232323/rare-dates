@@ -1,0 +1,702 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Rare Dates · تمور نادرة — Not Every Date Is Rare</title>
+<meta name="description" content="Medjool dates, filled and finished in Belgian chocolate. Nine pieces, two collections, made in Amman.">
+
+<!--
+  ═══════════════════════════════════════════════════════════════════════
+  RARE DATES — catalogue site
+  Built from wajih/brand/. Design system: brand/identity.md
+  Copy rules: brand/voice.md · Messaging: brand/messaging.md
+  Channel decision D3: catalogue + WhatsApp. No cart, no checkout.
+
+  ⚠️  PLACEHOLDERS TO FILL — all in the CONFIG block at the bottom of this file
+      1. CONFIG.whatsapp   — the real WhatsApp number
+      2. CONFIG.contactName— the name that signs messages
+      3. CONFIG.prices     — price per box, per collection
+      4. Product images    — placehold.co stubs at 4:5, swap 1:1 with real art
+      Search this file for "REPLACE" to find every one.
+
+  ⚠️  NOT PUBLISHED PENDING CLIENT CONFIRMATION (see guidelines.md Part 6):
+      - Jordan Valley sourcing claim — the origin line is commented out below
+      - Any "premium / finest / handcrafted" language — removed per voice.md
+  ═══════════════════════════════════════════════════════════════════════
+-->
+
+<!-- Favicon: the vesica, per identity.md — the only branded shape -->
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%230D0709'/%3E%3Cpath d='M50 14 C70 32, 70 68, 50 86 C30 68, 30 32, 50 14 Z' fill='none' stroke='%23C9A227' stroke-width='5'/%3E%3Cpath d='M50 14 L50 86' stroke='%23C9A227' stroke-width='5'/%3E%3C/svg%3E">
+
+<!-- Reveals are progressive enhancement: without JS nothing is ever hidden -->
+<script>document.documentElement.classList.add('js')</script>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500&family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300&family=Jost:wght@300;400;500&family=Reem+Kufi:wght@400;500&family=Tajawal:wght@300;400;500&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+tailwind.config = {
+  theme: {
+    extend: {
+      colors: {
+        wine: { 900:'#170509', 800:'#2B0812', 700:'#4A0E1F', 600:'#5C1327', 500:'#74192F' },
+        gold: { 600:'#9A7B1C', 500:'#C9A227', 400:'#E0C25C' },
+        ink:  '#0D0709',
+        cream:{ DEFAULT:'#F2E9DC', muted:'#B8A894' },
+        paper:'#FAF6F0'
+      }
+    }
+  }
+}
+</script>
+
+<style>
+/* ══════════════════════════════════════════════════════════
+   DESIGN SYSTEM — from brand/identity.md §03 §04 §07
+   ══════════════════════════════════════════════════════════ */
+:root{
+  --wine-900:#170509; --wine-800:#2B0812; --wine-700:#4A0E1F;
+  --wine-600:#5C1327; --wine-500:#74192F;
+  --gold-600:#9A7B1C; --gold-500:#C9A227; --gold-400:#E0C25C;
+  --ink:#0D0709; --cream:#F2E9DC; --cream-muted:#B8A894; --paper:#FAF6F0;
+
+  /* spacing tokens — intentional scale, not arbitrary steps */
+  --s-1:.5rem; --s-2:1rem;  --s-3:1.5rem; --s-4:2rem;
+  --s-5:3rem;  --s-6:4rem;  --s-7:6rem;   --s-8:8rem; --s-9:12rem;
+
+  /* layered wine-tinted shadows — never neutral grey */
+  --lift-1:0 1px 2px rgba(23,5,9,.40);
+  --lift-2:0 1px 2px rgba(23,5,9,.40), 0 8px 24px rgba(23,5,9,.35);
+  --lift-3:0 1px 2px rgba(23,5,9,.40), 0 8px 24px rgba(23,5,9,.35), 0 24px 64px rgba(23,5,9,.28);
+
+  --ease-spring:cubic-bezier(.16,1,.3,1);
+  --rule:rgba(201,162,39,.22);
+}
+
+*{ -webkit-font-smoothing:antialiased; }
+html{ scroll-behavior:smooth; }
+body{
+  background:var(--ink);
+  color:var(--cream);
+  font-family:'Jost',"Century Gothic",Futura,system-ui,sans-serif;
+  font-weight:300; font-size:17px; line-height:1.7; letter-spacing:.01em;
+  overflow-x:hidden;
+}
+
+/* ── Arabic mode ─────────────────────────────────────────── */
+body.ar{ font-family:'Tajawal','Segoe UI',Tahoma,sans-serif; font-size:18px; line-height:1.9; letter-spacing:0; }
+body.ar .display{ font-family:'Reem Kufi',sans-serif; letter-spacing:0; line-height:1.35; font-weight:400; }
+body.ar .inscribed{ font-family:'Reem Kufi',sans-serif; letter-spacing:0; }
+body.ar .lat-only{ display:none; }
+/* Reem Kufi has no italic — never let the browser synthesise an oblique */
+body.ar em,body.ar .italic{ font-style:normal; }
+
+/* ── Type roles ──────────────────────────────────────────── */
+.display{
+  font-family:'Cormorant Garamond','Times New Roman',Georgia,serif;
+  font-weight:300; letter-spacing:-.03em; line-height:1.05;
+}
+.inscribed{
+  font-family:'Cinzel','Trajan Pro',Georgia,serif;
+  font-weight:400; letter-spacing:.10em; text-transform:uppercase;
+}
+.wordmark{ font-family:'Cinzel',Georgia,serif; font-weight:400; letter-spacing:.20em; text-transform:uppercase; }
+.label{ font-family:'Jost',sans-serif; font-weight:500; font-size:11px; letter-spacing:.14em; text-transform:uppercase; line-height:1.4; }
+body.ar .label{ font-family:'Tajawal',sans-serif; letter-spacing:.02em; }
+
+/* ── Atmosphere: layered radial blooms + grain ───────────── */
+.velvet{ position:relative; isolation:isolate; }
+.velvet::before{
+  content:''; position:absolute; inset:0; z-index:-2;
+  background:
+    radial-gradient(120% 90% at 22% 8%,  rgba(116,25,47,.55) 0%, transparent 55%),
+    radial-gradient(90% 70%  at 88% 30%, rgba(92,19,39,.42) 0%, transparent 60%),
+    radial-gradient(140% 120% at 50% 105%, rgba(23,5,9,.95) 0%, transparent 70%),
+    var(--wine-700);
+}
+.grain{
+  position:fixed; inset:0; z-index:60; pointer-events:none; opacity:.045;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* ── Hairline rule system — the engraved-certificate motif ─ */
+.rule{ height:1px; background:linear-gradient(90deg,transparent,var(--rule) 18%,var(--rule) 82%,transparent); }
+.rule-tight{ height:1px; background:var(--rule); }
+
+/* ── Interactive states — hover / focus-visible / active ─── */
+a,button{ transition:color .4s var(--ease-spring), opacity .4s var(--ease-spring), transform .4s var(--ease-spring); }
+:focus-visible{ outline:1px solid var(--gold-400); outline-offset:5px; border-radius:1px; }
+
+.nav-link{ position:relative; color:var(--cream-muted); }
+.nav-link::after{
+  content:''; position:absolute; left:0; right:0; bottom:-5px; height:1px;
+  background:var(--gold-500); transform:scaleX(0); transform-origin:left;
+  transition:transform .55s var(--ease-spring);
+}
+body.ar .nav-link::after{ transform-origin:right; }
+.nav-link:hover,.nav-link:focus-visible{ color:var(--cream); }
+.nav-link:hover::after,.nav-link:focus-visible::after{ transform:scaleX(1); }
+.nav-link:active{ transform:translateY(1px); }
+
+.btn-gold{
+  position:relative; display:inline-flex; align-items:center; gap:.7rem;
+  background:var(--gold-500); color:var(--ink);
+  padding:1rem 2.25rem; box-shadow:var(--lift-2);
+  transition:transform .5s var(--ease-spring), box-shadow .5s var(--ease-spring), background-color .35s var(--ease-spring);
+}
+.btn-gold:hover{ background:var(--gold-400); transform:translateY(-2px); box-shadow:var(--lift-3); }
+.btn-gold:active{ transform:translateY(0); box-shadow:var(--lift-1); background:var(--gold-600); }
+
+.btn-ghost{
+  display:inline-flex; align-items:center; gap:.7rem;
+  border:1px solid var(--rule); color:var(--cream); padding:1rem 2.25rem;
+  transition:transform .5s var(--ease-spring), border-color .5s var(--ease-spring), background-color .5s var(--ease-spring);
+}
+.btn-ghost:hover{ border-color:var(--gold-500); background:rgba(201,162,39,.06); transform:translateY(-2px); }
+.btn-ghost:active{ transform:translateY(0); background:rgba(201,162,39,.12); }
+
+/* ── Product card — elevation system base→elevated→floating ─ */
+.piece{
+  background:linear-gradient(168deg,var(--wine-800) 0%,rgba(23,5,9,.92) 100%);
+  border:1px solid rgba(116,25,47,.42);
+  transition:transform .65s var(--ease-spring), box-shadow .65s var(--ease-spring), border-color .65s var(--ease-spring);
+}
+.piece:hover{ transform:translateY(-6px); box-shadow:var(--lift-3); border-color:rgba(201,162,39,.34); }
+.piece:hover .piece-img{ transform:scale(1.045); }
+.piece:hover .piece-idx{ opacity:1; }
+
+.piece-frame{ position:relative; overflow:hidden; aspect-ratio:4/5; background:var(--wine-900); }
+.piece-img{ width:100%; height:100%; object-fit:cover; transition:transform 1s var(--ease-spring); }
+/* colour treatment + scrim per identity.md §05 — unifies the library */
+.piece-frame::after{
+  content:''; position:absolute; inset:0; pointer-events:none;
+  background:linear-gradient(to top,rgba(23,5,9,.72) 0%,rgba(23,5,9,.10) 45%,transparent 100%);
+}
+.piece-frame::before{
+  content:''; position:absolute; inset:0; z-index:2; pointer-events:none;
+  background:var(--wine-700); mix-blend-mode:multiply; opacity:.20;
+}
+.piece-idx{
+  position:absolute; top:.9rem; inset-inline-end:1.1rem; z-index:3;
+  opacity:.55; transition:opacity .6s var(--ease-spring);
+}
+
+/* ── Load + scroll reveals — transform & opacity only ────── */
+html.js .reveal{ opacity:0; transform:translateY(22px); transition:opacity .9s var(--ease-spring), transform .9s var(--ease-spring); }
+html.js .reveal.in{ opacity:1; transform:none; }
+
+@keyframes rise{ from{opacity:0; transform:translateY(26px);} to{opacity:1; transform:none;} }
+html.js .stagger>*{ opacity:0; animation:rise .95s var(--ease-spring) forwards; }
+html.js .stagger>*:nth-child(1){ animation-delay:.10s }
+html.js .stagger>*:nth-child(2){ animation-delay:.24s }
+html.js .stagger>*:nth-child(3){ animation-delay:.38s }
+html.js .stagger>*:nth-child(4){ animation-delay:.52s }
+html.js .stagger>*:nth-child(5){ animation-delay:.66s }
+
+@keyframes seal{ from{opacity:0; transform:scale(.86) rotate(-4deg);} to{opacity:1; transform:none;} }
+html.js .seal-in{ opacity:0; animation:seal 1.5s var(--ease-spring) .02s forwards; }
+
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{ animation-duration:.01ms!important; animation-iteration-count:1!important; transition-duration:.01ms!important; scroll-behavior:auto!important; }
+  .reveal{ opacity:1; transform:none; }
+  .stagger>*{ opacity:1; animation:none; }
+  .seal-in{ opacity:1; animation:none; }
+}
+
+/* Static mode — append ?static=1 to capture the page with no entrance animation.
+   Used for full-page screenshots, where off-screen reveals would never trigger. */
+html.static .reveal{ opacity:1!important; transform:none!important; transition:none!important; }
+html.static .stagger>*{ opacity:1!important; animation:none!important; }
+html.static .seal-in{ opacity:1!important; animation:none!important; }
+
+.container-x{ width:100%; max-width:1240px; margin-inline:auto; padding-inline:1.5rem; }
+@media(min-width:768px){ .container-x{ padding-inline:3rem; } }
+::selection{ background:var(--gold-500); color:var(--ink); }
+</style>
+</head>
+
+<body class="antialiased">
+<div class="grain" aria-hidden="true"></div>
+
+<!-- ══ VESICA — the single branded shape, identity.md §02 ══ -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <g id="vesica">
+      <path d="M50 5 C 73 27, 73 73, 50 95 C 27 73, 27 27, 50 5 Z" fill="none" stroke="currentColor" stroke-width="2.4"/>
+      <path d="M50 5 L 50 95" fill="none" stroke="currentColor" stroke-width="2.4"/>
+    </g>
+  </defs>
+</svg>
+
+<a href="#collections" class="sr-only focus:not-sr-only focus:absolute focus:z-50 focus:top-4 focus:start-4 focus:bg-gold-500 focus:text-ink focus:px-4 focus:py-2 label">Skip to collections</a>
+
+<!-- ══════════════ HEADER ══════════════ -->
+<header class="fixed top-0 inset-x-0 z-50 backdrop-blur-md" style="background:linear-gradient(to bottom,rgba(13,7,9,.94),rgba(13,7,9,.62) 70%,transparent);">
+  <div class="container-x flex items-center justify-between py-4 md:py-5">
+
+    <a href="#top" class="flex items-center gap-3 group" aria-label="Rare Dates — home">
+      <svg viewBox="0 0 100 100" class="w-6 h-6 md:w-7 md:h-7 text-gold-500 shrink-0" aria-hidden="true"><use href="#vesica"/></svg>
+      <span class="wordmark text-[11px] sm:text-[13px] md:text-[15px] text-cream leading-none pt-[2px]">Rare Dates</span>
+    </a>
+
+    <nav class="hidden lg:flex items-center gap-10 label" aria-label="Primary">
+      <a href="#collections" class="nav-link" data-en="Collections" data-ar="المجموعات">Collections</a>
+      <a href="#handover"   class="nav-link" data-en="Gifting"     data-ar="الإهداء">Gifting</a>
+      <a href="#corporate"  class="nav-link" data-en="Corporate"   data-ar="الشركات">Corporate</a>
+      <a href="#order"      class="nav-link" data-en="Order"       data-ar="اطلب">Order</a>
+    </nav>
+
+    <div class="flex items-center gap-4 md:gap-6">
+      <button id="langBtn" type="button" class="label text-cream-muted hover:text-gold-400 focus-visible:text-gold-400 flex items-center gap-2" aria-label="Switch language">
+        <span class="w-1 h-1 rounded-full bg-gold-500 inline-block" aria-hidden="true"></span>
+        <span id="langLabel">العربية</span>
+      </button>
+      <a href="#order" class="btn-gold label !py-2.5 !px-4 sm:!px-5" data-en="Order" data-ar="اطلب">Order</a>
+    </div>
+  </div>
+  <div class="rule-tight opacity-60"></div>
+</header>
+
+<main id="top">
+
+<!-- ══════════════ HERO ══════════════
+     Typography-led, no product render. This is the D2 rule-1 solution:
+     the hero cannot make a promise an AI image can't keep. -->
+<section class="velvet relative min-h-[100svh] flex items-center overflow-hidden">
+  <!-- oversized vesica watermark, grid-breaking -->
+  <svg viewBox="0 0 100 100" aria-hidden="true"
+       class="absolute -end-[52%] md:-end-[18%] top-1/2 -translate-y-1/2 h-[70%] md:h-[96%] text-gold-500 opacity-[.028] md:opacity-[.035] pointer-events-none">
+    <use href="#vesica"/>
+  </svg>
+
+  <div class="container-x relative z-10 py-32 md:py-40">
+    <div class="max-w-[60rem] stagger">
+
+      <div class="flex items-center gap-4">
+        <svg viewBox="0 0 100 100" class="w-8 h-8 text-gold-500 seal-in" aria-hidden="true"><use href="#vesica"/></svg>
+        <div class="rule w-16 md:w-28"></div>
+        <span class="label text-gold-500" data-en="Amman, Jordan" data-ar="عمّان، الأردن">Amman, Jordan</span>
+      </div>
+
+      <h1 class="display text-cream mt-8 text-[clamp(2.9rem,8.4vw,6.2rem)]">
+        <span data-en="Some gifts get eaten." data-ar="كل الهدايا تُؤكل.">Some gifts get eaten.</span><br>
+        <em class="italic text-gold-400" data-en="Ours get asked about." data-ar="هديّتنا يُسأل عنها.">Ours get asked about.</em>
+      </h1>
+
+      <p class="mt-8 md:mt-10 max-w-[34rem] text-cream-muted text-[1.05rem] md:text-[1.15rem]"
+         data-en="Nine pieces. Medjool dates, filled and finished in Belgian chocolate, made in small batches in Amman."
+         data-ar="تسع قطع. تمر مجدول، محشوّ ومغلّف بالشوكولا البلجيكية، يُصنع بكميات قليلة في عمّان.">
+        Nine pieces. Medjool dates, filled and finished in Belgian chocolate, made in small batches in Amman.
+      </p>
+
+      <div class="mt-10 md:mt-12 flex flex-col sm:flex-row sm:flex-wrap sm:items-center gap-4">
+        <a href="#order" class="btn-gold label justify-center sm:justify-start" data-wa>
+          <svg viewBox="0 0 24 24" class="w-4 h-4" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.6 15l-1.3 4.8 4.9-1.3A10 10 0 1 0 12 2Zm5.6 14.1c-.2.7-1.2 1.3-1.9 1.4-.5.1-1.1.2-3.6-.8-3-1.3-4.9-4.4-5-4.6-.2-.2-1.2-1.6-1.2-3 0-1.5.8-2.2 1-2.5.3-.3.6-.4.8-.4h.6c.2 0 .5-.1.7.5l1 2.4c.1.2.1.4 0 .6l-.4.6-.3.3c-.1.1-.3.3-.1.6.1.3.7 1.2 1.5 1.9 1 .9 1.8 1.2 2.1 1.3.3.1.4.1.6-.1l.9-1c.2-.2.4-.2.6-.1l2.2 1.1c.2.1.4.2.5.3 0 .1 0 .6-.2 1.2Z"/></svg>
+          <span data-en="Order on WhatsApp" data-ar="اطلب عبر واتساب">Order on WhatsApp</span>
+        </a>
+        <a href="#collections" class="btn-ghost label justify-center sm:justify-start" data-en="See the collections" data-ar="شاهد المجموعات">See the collections</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="absolute bottom-0 inset-x-0">
+    <div class="container-x pb-7">
+      <div class="rule mb-5"></div>
+      <p class="label text-gold-500/75 tracking-[.24em]" data-en="Not Every Date Is Rare." data-ar="ما كل تمرٍ نادر">Not Every Date Is Rare.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════ THE RANGE — proof, not adjectives ══════════════ -->
+<section class="bg-ink py-20 md:py-28 border-y" style="border-color:rgba(116,25,47,.32)">
+  <div class="container-x grid gap-12 md:gap-8 md:grid-cols-3">
+    <div class="reveal">
+      <p class="display text-gold-500 text-5xl md:text-6xl">9</p>
+      <div class="rule w-12 my-4"></div>
+      <p class="label text-cream mb-2" data-en="Pieces, total" data-ar="قطع بالمجمل">Pieces, total</p>
+      <p class="text-cream-muted text-[.98rem]" data-en="That is the whole range. Every new flavour has to displace one that's already there." data-ar="هذه هي المجموعة كاملةً. كل نكهة جديدة عليها أن تحلّ محلّ واحدة موجودة.">That is the whole range. Every new flavour has to displace one that's already there.</p>
+    </div>
+    <div class="reveal">
+      <p class="display text-gold-500 text-5xl md:text-6xl">2</p>
+      <div class="rule w-12 my-4"></div>
+      <p class="label text-cream mb-2" data-en="Collections" data-ar="مجموعتان">Collections</p>
+      <p class="text-cream-muted text-[.98rem]" data-en="Signature, in dark and white Belgian chocolate. And the fruit collection, offered either way." data-ar="سيغنتشر، بالشوكولا البلجيكية الداكنة والبيضاء. ومجموعة الفواكه، متوفرة بالاثنتين.">Signature, in dark and white Belgian chocolate. And the fruit collection, offered either way.</p>
+    </div>
+    <div class="reveal">
+      <p class="display text-gold-500 text-5xl md:text-6xl">1</p>
+      <div class="rule w-12 my-4"></div>
+      <p class="label text-cream mb-2" data-en="Way to order" data-ar="طريقة واحدة للطلب">Way to order</p>
+      <p class="text-cream-muted text-[.98rem]" data-en="Direct, on WhatsApp. Not in supermarkets, and not planned to be." data-ar="مباشرةً عبر واتساب. غير متوفرة في المتاجر الكبرى، ولا نية لذلك.">Direct, on WhatsApp. Not in supermarkets, and not planned to be.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════ COLLECTION I — SIGNATURE ══════════════ -->
+<section id="collections" class="velvet py-24 md:py-32 scroll-mt-20">
+  <div class="container-x">
+
+    <div class="reveal flex items-end justify-between flex-wrap gap-6 mb-4">
+      <div>
+        <div class="flex items-center gap-3 mb-5">
+          <svg viewBox="0 0 100 100" class="w-4 h-4 text-gold-500" aria-hidden="true"><use href="#vesica"/></svg>
+          <span class="label text-gold-500" data-en="Collection I" data-ar="المجموعة الأولى">Collection I</span>
+        </div>
+        <h2 class="display text-cream text-[clamp(2.2rem,5.2vw,3.4rem)]" data-en="The Signature Collection" data-ar="مجموعة سيغنتشر">The Signature Collection</h2>
+      </div>
+      <p class="max-w-sm text-cream-muted text-[.98rem]" data-en="Six pieces. Medjool dates, filled, and finished in Belgian chocolate." data-ar="ست قطع. تمر مجدول، محشوّ ومغلّف بالشوكولا البلجيكية.">Six pieces. Medjool dates, filled, and finished in Belgian chocolate.</p>
+    </div>
+    <div class="rule mb-12 md:mb-16"></div>
+
+    <div class="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+
+      <!-- REPLACE: placehold.co stubs — swap for real art at 4:5, same slot, zero rework -->
+      <article class="piece reveal">
+        <div class="piece-frame">
+          <img class="piece-img" src="https://placehold.co/800x1000/2B0812/C9A227?text=Pistachio" alt="Pistachio piece" width="800" height="1000">
+          <span class="piece-idx label text-gold-400">01</span>
+        </div>
+        <div class="p-6 md:p-7">
+          <h3 class="inscribed text-cream text-[1.05rem] mb-3" data-en="Pistachio" data-ar="فستق حلبي">Pistachio</h3>
+          <p class="text-cream-muted text-[.95rem]" data-en="Roasted pistachios, ground into a smooth filling. Dark Belgian chocolate." data-ar="فستق محمّص مطحون في حشوة ناعمة. شوكولا بلجيكية داكنة.">Roasted pistachios, ground into a smooth filling. Dark Belgian chocolate.</p>
+        </div>
+      </article>
+
+      <article class="piece reveal">
+        <div class="piece-frame">
+          <img class="piece-img" src="https://placehold.co/800x1000/2B0812/C9A227?text=Lotus+Biscoff" alt="Lotus Biscoff piece" width="800" height="1000">
+          <span class="piece-idx label text-gold-400">02</span>
+        </div>
+        <div class="p-6 md:p-7">
+          <h3 class="inscribed text-cream text-[1.05rem] mb-3" data-en="Lotus Biscoff" data-ar="لوتس بسكوف">Lotus Biscoff</h3>
+          <p class="text-cream-muted text-[.95rem]" data-en="Lotus Biscoff cream, with caramel biscuit through it. Dark Belgian chocolate." data-ar="كريمة لوتس بسكوف مع بسكويت الكراميل. شوكولا بلجيكية داكنة.">Lotus Biscoff cream, with caramel biscuit through it. Dark Belgian chocolate.</p>
+        </div>
+      </article>
+
+      <article class="piece reveal">
+        <div class="piece-frame">
+          <img class="piece-img" src="https://placehold.co/800x1000/2B0812/C9A227?text=Hazelnut" alt="Hazelnut piece" width="800" height="1000">
+          <span class="piece-idx label text-gold-400">03</span>
+        </div>
+        <div class="p-6 md:p-7">
+          <h3 class="inscribed text-cream text-[1.05rem] mb-3" data-en="Hazelnut" data-ar="بندق">Hazelnut</h3>
+          <p class="text-cream-muted text-[.95rem]" data-en="Roasted hazelnut filling. Dark Belgian chocolate." data-ar="حشوة بندق محمّص. شوكولا بلجيكية داكنة.">Roasted hazelnut filling. Dark Belgian chocolate.</p>
+        </div>
+      </article>
+
+      <article class="piece reveal">
+        <div class="piece-frame">
+          <img class="piece-img" src="https://placehold.co/800x1000/2B0812/C9A227?text=Red+Velvet" alt="Red Velvet piece" width="800" height="1000">
+          <span class="piece-idx label text-gold-400">04</span>
+        </div>
+        <div class="p-6 md:p-7">
+          <h3 class="inscribed text-cream text-[1.05rem] mb-3" data-en="Red Velvet" data-ar="ريد فيلفيت">Red Velvet</h3>
+          <p class="text-cream-muted text-[.95rem]" data-en="Red velvet cream. Belgian white chocolate." data-ar="كريمة ريد فيلفيت. شوكولا بلجيكية بيضاء.">Red velvet cream. Belgian white chocolate.</p>
+        </div>
+      </article>
+
+      <article class="piece reveal">
+        <div class="piece-frame">
+          <img class="piece-img" src="https://placehold.co/800x1000/2B0812/C9A227?text=Matcha" alt="Matcha piece" width="800" height="1000">
+          <span class="piece-idx label text-gold-400">05</span>
+        </div>
+        <div class="p-6 md:p-7">
+          <h3 class="inscribed text-cream text-[1.05rem] mb-3" data-en="Matcha" data-ar="ماتشا">Matcha</h3>
+          <p class="text-cream-muted text-[.95rem]" data-en="Japanese matcha, folded into a white chocolate filling. Belgian white chocolate." data-ar="ماتشا يابانية في حشوة شوكولا بيضاء. شوكولا بلجيكية بيضاء.">Japanese matcha, folded into a white chocolate filling. Belgian white chocolate.</p>
+        </div>
+      </article>
+
+      <article class="piece reveal">
+        <div class="piece-frame">
+          <img class="piece-img" src="https://placehold.co/800x1000/2B0812/C9A227?text=Raffaello" alt="Raffaello piece" width="800" height="1000">
+          <span class="piece-idx label text-gold-400">06</span>
+        </div>
+        <div class="p-6 md:p-7">
+          <h3 class="inscribed text-cream text-[1.05rem] mb-3" data-en="Raffaello" data-ar="رافاييلو">Raffaello</h3>
+          <p class="text-cream-muted text-[.95rem]" data-en="Coconut and roasted almond. Belgian white chocolate." data-ar="جوز الهند مع لوز محمّص. شوكولا بلجيكية بيضاء.">Coconut and roasted almond. Belgian white chocolate.</p>
+        </div>
+      </article>
+
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════ COLLECTION II — FRUIT ══════════════ -->
+<section class="bg-ink py-24 md:py-32">
+  <div class="container-x">
+
+    <div class="reveal flex items-end justify-between flex-wrap gap-6 mb-4">
+      <div>
+        <div class="flex items-center gap-3 mb-5">
+          <svg viewBox="0 0 100 100" class="w-4 h-4 text-gold-500" aria-hidden="true"><use href="#vesica"/></svg>
+          <span class="label text-gold-500" data-en="Collection II" data-ar="المجموعة الثانية">Collection II</span>
+        </div>
+        <h2 class="display text-cream text-[clamp(2.2rem,5.2vw,3.4rem)]" data-en="The Fruit Collection" data-ar="مجموعة الفواكه">The Fruit Collection</h2>
+      </div>
+      <p class="max-w-sm text-cream-muted text-[.98rem]" data-en="Three pieces, each offered in dark or white Belgian chocolate." data-ar="ثلاث قطع، كل منها بالشوكولا البلجيكية الداكنة أو البيضاء.">Three pieces, each offered in dark or white Belgian chocolate.</p>
+    </div>
+    <div class="rule mb-12 md:mb-16"></div>
+
+    <div class="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+
+      <article class="piece reveal">
+        <div class="piece-frame">
+          <img class="piece-img" src="https://placehold.co/800x1000/170509/C9A227?text=Lemon" alt="Lemon piece" width="800" height="1000">
+          <span class="piece-idx label text-gold-400">07</span>
+        </div>
+        <div class="p-6 md:p-7">
+          <h3 class="inscribed text-cream text-[1.05rem] mb-3" data-en="Lemon" data-ar="ليمون">Lemon</h3>
+          <p class="text-cream-muted text-[.95rem]" data-en="Lemon cream with fresh zest, finished with thin lemon slices." data-ar="كريمة ليمون مع قشر ليمون طازج وشرائح رقيقة.">Lemon cream with fresh zest, finished with thin lemon slices.</p>
+          <p class="label text-gold-500 mt-4" data-en="Dark or white" data-ar="داكنة أو بيضاء">Dark or white</p>
+        </div>
+      </article>
+
+      <article class="piece reveal">
+        <div class="piece-frame">
+          <img class="piece-img" src="https://placehold.co/800x1000/170509/C9A227?text=Pomegranate" alt="Pomegranate piece" width="800" height="1000">
+          <span class="piece-idx label text-gold-400">08</span>
+        </div>
+        <div class="p-6 md:p-7">
+          <h3 class="inscribed text-cream text-[1.05rem] mb-3" data-en="Pomegranate" data-ar="رمّان">Pomegranate</h3>
+          <p class="text-cream-muted text-[.95rem]" data-en="Pomegranate filling, topped with fresh seeds." data-ar="حشوة رمّان مع حبّات رمّان طازجة.">Pomegranate filling, topped with fresh seeds.</p>
+          <p class="label text-gold-500 mt-4" data-en="Dark or white" data-ar="داكنة أو بيضاء">Dark or white</p>
+        </div>
+      </article>
+
+      <article class="piece reveal">
+        <div class="piece-frame">
+          <img class="piece-img" src="https://placehold.co/800x1000/170509/C9A227?text=Banana+Pistachio" alt="Banana and pistachio piece" width="800" height="1000">
+          <span class="piece-idx label text-gold-400">09</span>
+        </div>
+        <div class="p-6 md:p-7">
+          <h3 class="inscribed text-cream text-[1.05rem] mb-3" data-en="Banana &amp; Pistachio" data-ar="موز وفستق">Banana &amp; Pistachio</h3>
+          <p class="text-cream-muted text-[.95rem]" data-en="Banana and pistachio filling, with banana chips and chopped pistachio." data-ar="حشوة موز وفستق مع رقائق موز وفستق مجروش.">Banana and pistachio filling, with banana chips and chopped pistachio.</p>
+          <p class="label text-gold-500 mt-4" data-en="Dark or white" data-ar="داكنة أو بيضاء">Dark or white</p>
+        </div>
+      </article>
+
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════ THE HANDOVER — the brand's actual territory ══════════════ -->
+<section id="handover" class="velvet py-24 md:py-32 scroll-mt-20 relative overflow-hidden">
+  <svg viewBox="0 0 100 100" aria-hidden="true" class="absolute -start-[10%] -bottom-[20%] h-[80%] text-gold-500 opacity-[.04] pointer-events-none"><use href="#vesica"/></svg>
+  <div class="container-x relative">
+    <div class="max-w-3xl">
+      <div class="reveal flex items-center gap-3 mb-6">
+        <div class="rule w-12"></div>
+        <span class="label text-gold-500" data-en="Gifting" data-ar="الإهداء">Gifting</span>
+      </div>
+      <h2 class="reveal display text-cream text-[clamp(2.1rem,5vw,3.3rem)] mb-8" data-en="Built for the moment it changes hands." data-ar="مصنوعة للحظة التي تنتقل فيها من يدٍ إلى يد.">Built for the moment it changes hands.</h2>
+      <p class="reveal text-cream-muted text-[1.05rem] mb-6 max-w-2xl" data-en="A box is opened once, in front of people. That is the part we design around — the weight of the lid, the seal breaking, what the inside looks like before anything is taken out." data-ar="تُفتح العلبة مرّة واحدة، أمام الناس. هذه هي اللحظة التي نصمّم من أجلها — ثقل الغطاء، وكسر الختم، وشكل الداخل قبل أن تُرفع أي قطعة.">A box is opened once, in front of people. That is the part we design around — the weight of the lid, the seal breaking, what the inside looks like before anything is taken out.</p>
+      <p class="reveal text-cream-muted text-[1.05rem] max-w-2xl" data-en="Ramadan and Eid. An engagement. A new baby. A table you are hosting on Friday. Tell us the occasion and we will put the box together for it." data-ar="رمضان والعيد. خطوبة. مولود جديد. سفرة تستضيفها يوم الجمعة. قل لنا المناسبة ونجهّز العلبة لها.">Ramadan and Eid. An engagement. A new baby. A table you are hosting on Friday. Tell us the occasion and we will put the box together for it.</p>
+
+      <div class="reveal mt-12 grid gap-px sm:grid-cols-3" style="background:rgba(116,25,47,.4)">
+        <div class="bg-wine-800/80 p-6">
+          <p class="label text-gold-500 mb-2" data-en="Delivery" data-ar="التوصيل">Delivery</p>
+          <p class="text-cream text-[.95rem]" data-en="Across Amman, same day before 4pm." data-ar="داخل عمّان، بنفس اليوم قبل الساعة ٤.">Across Amman, same day before 4pm.</p>
+        </div>
+        <div class="bg-wine-800/80 p-6">
+          <p class="label text-gold-500 mb-2" data-en="Made to order" data-ar="تُحضَّر عند الطلب">Made to order</p>
+          <p class="text-cream text-[.95rem]" data-en="Small batches, so earlier is better." data-ar="بكميات قليلة، لذلك الطلب المبكر أفضل.">Small batches, so earlier is better.</p>
+        </div>
+        <div class="bg-wine-800/80 p-6">
+          <p class="label text-gold-500 mb-2" data-en="Gift card" data-ar="بطاقة إهداء">Gift card</p>
+          <p class="text-cream text-[.95rem]" data-en="Included, written by hand if you want." data-ar="مرفقة، ونكتبها بخط اليد إذا أحببت.">Included, written by hand if you want.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════ CORPORATE — Hazem. Per audience.md, the margin. ══════════════ -->
+<section id="corporate" class="bg-ink py-24 md:py-32 scroll-mt-20 border-y" style="border-color:rgba(116,25,47,.32)">
+  <div class="container-x grid gap-12 lg:grid-cols-2 lg:gap-20 items-center">
+    <div>
+      <div class="reveal flex items-center gap-3 mb-6">
+        <div class="rule w-12"></div>
+        <span class="label text-gold-500" data-en="Corporate" data-ar="الشركات">Corporate</span>
+      </div>
+      <h2 class="reveal display text-cream text-[clamp(2rem,4.6vw,3rem)] mb-7" data-en="Corporate and seasonal gifting." data-ar="هدايا الشركات والمناسبات الموسمية.">Corporate and seasonal gifting.</h2>
+      <p class="reveal text-cream-muted mb-8 max-w-xl" data-en="Orders from 20 boxes. Branded cards, and a delivery date confirmed in writing before production begins. Send the quantity and the date, and you will have a price the same day." data-ar="الطلبات تبدأ من ٢٠ علبة. بطاقات تحمل شعار الشركة، وتاريخ تسليم مؤكَّد كتابةً قبل بدء التحضير. أرسل الكمية والتاريخ، ويصلك السعر في نفس اليوم.">Orders from 20 boxes. Branded cards, and a delivery date confirmed in writing before production begins. Send the quantity and the date, and you will have a price the same day.</p>
+      <a href="#" class="reveal btn-ghost label" data-wa-corporate>
+        <span data-en="Request corporate pricing" data-ar="اطلب عرض سعر للشركات">Request corporate pricing</span>
+      </a>
+    </div>
+
+    <div class="reveal grid gap-px sm:grid-cols-2" style="background:rgba(116,25,47,.4)">
+      <div class="bg-wine-800/70 p-7">
+        <p class="display text-gold-500 text-4xl mb-3" dir="ltr">20+</p>
+        <p class="label text-cream" data-en="Minimum order" data-ar="الحد الأدنى للطلب">Minimum order</p>
+      </div>
+      <div class="bg-wine-800/70 p-7">
+        <p class="display text-gold-500 text-4xl mb-3">24h</p>
+        <p class="label text-cream" data-en="Quote turnaround" data-ar="مدة إصدار العرض">Quote turnaround</p>
+      </div>
+      <div class="bg-wine-800/70 p-7">
+        <p class="display text-gold-500 text-4xl mb-3">01</p>
+        <p class="label text-cream" data-en="Invoice, one supplier" data-ar="فاتورة واحدة، مورّد واحد">Invoice, one supplier</p>
+      </div>
+      <div class="bg-wine-800/70 p-7">
+        <svg viewBox="0 0 100 100" class="w-8 h-9 text-gold-500 mb-3" aria-hidden="true"><use href="#vesica"/></svg>
+        <p class="label text-cream" data-en="Branded cards available" data-ar="بطاقات بشعار الشركة">Branded cards available</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════ ORDER — WhatsApp is the till (D3) ══════════════ -->
+<section id="order" class="velvet py-24 md:py-32 scroll-mt-20">
+  <div class="container-x max-w-4xl text-center">
+    <svg viewBox="0 0 100 100" class="reveal w-10 h-10 text-gold-500 mx-auto mb-8" aria-hidden="true"><use href="#vesica"/></svg>
+    <h2 class="reveal display text-cream text-[clamp(2.1rem,5.4vw,3.6rem)] mb-6" data-en="Order on WhatsApp." data-ar="اطلب عبر واتساب.">Order on WhatsApp.</h2>
+    <p class="reveal text-cream-muted text-[1.05rem] max-w-xl mx-auto mb-10" data-en="Tell us the occasion, the collection, and the day you need it. You will get a price and a delivery time back." data-ar="أخبرنا بالمناسبة والمجموعة واليوم الذي تحتاجها فيه، ويصلك السعر ووقت التوصيل.">Tell us the occasion, the collection, and the day you need it. You will get a price and a delivery time back.</p>
+
+    <!-- REPLACE: prices — CONFIG.prices at the bottom of this file -->
+    <div class="reveal grid gap-px sm:grid-cols-3 mb-12 text-start" style="background:rgba(116,25,47,.4)">
+      <div class="bg-wine-800/80 p-7">
+        <p class="inscribed text-cream text-[.95rem] mb-3" data-en="Signature" data-ar="سيغنتشر">Signature</p>
+        <p class="text-cream-muted text-[.9rem] mb-4" data-en="Six pieces, one of each." data-ar="ست قطع، واحدة من كل نكهة.">Six pieces, one of each.</p>
+        <p class="label text-gold-500" data-price="signature">JOD ——</p>
+      </div>
+      <div class="bg-wine-800/80 p-7">
+        <p class="inscribed text-cream text-[.95rem] mb-3" data-en="Fruit" data-ar="الفواكه">Fruit</p>
+        <p class="text-cream-muted text-[.9rem] mb-4" data-en="Three pieces, dark or white." data-ar="ثلاث قطع، داكنة أو بيضاء.">Three pieces, dark or white.</p>
+        <p class="label text-gold-500" data-price="fruit">JOD ——</p>
+      </div>
+      <div class="bg-wine-800/80 p-7">
+        <p class="inscribed text-cream text-[.95rem] mb-3" data-en="The Nine" data-ar="التسعة">The Nine</p>
+        <p class="text-cream-muted text-[.9rem] mb-4" data-en="The whole range, in one box." data-ar="المجموعة كاملةً في علبة واحدة.">The whole range, in one box.</p>
+        <p class="label text-gold-500" data-price="nine">JOD ——</p>
+      </div>
+    </div>
+
+    <a href="#" class="reveal btn-gold label text-[12px]" data-wa>
+      <svg viewBox="0 0 24 24" class="w-4 h-4" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.6 15l-1.3 4.8 4.9-1.3A10 10 0 1 0 12 2Zm5.6 14.1c-.2.7-1.2 1.3-1.9 1.4-.5.1-1.1.2-3.6-.8-3-1.3-4.9-4.4-5-4.6-.2-.2-1.2-1.6-1.2-3 0-1.5.8-2.2 1-2.5.3-.3.6-.4.8-.4h.6c.2 0 .5-.1.7.5l1 2.4c.1.2.1.4 0 .6l-.4.6-.3.3c-.1.1-.3.3-.1.6.1.3.7 1.2 1.5 1.9 1 .9 1.8 1.2 2.1 1.3.3.1.4.1.6-.1l.9-1c.2-.2.4-.2.6-.1l2.2 1.1c.2.1.4.2.5.3 0 .1 0 .6-.2 1.2Z"/></svg>
+      <span data-en="Start an order" data-ar="ابدأ الطلب">Start an order</span>
+    </a>
+    <p class="reveal label text-cream-muted/60 mt-6" data-en="Amman · same-day delivery before 4pm" data-ar="عمّان · توصيل بنفس اليوم قبل الساعة ٤">Amman · same-day delivery before 4pm</p>
+  </div>
+</section>
+
+</main>
+
+<!-- ══════════════ FOOTER ══════════════ -->
+<footer class="bg-ink pt-16 pb-10">
+  <div class="container-x">
+    <div class="rule mb-12"></div>
+
+    <div class="flex flex-col md:flex-row md:items-end justify-between gap-10 mb-14">
+      <div>
+        <div class="flex items-center gap-4 mb-5">
+          <svg viewBox="0 0 100 100" class="w-9 h-9 text-gold-500" aria-hidden="true"><use href="#vesica"/></svg>
+          <div>
+            <p class="wordmark text-cream text-[15px] leading-none mb-1.5">Rare Dates</p>
+            <p class="text-gold-500 text-[13px] leading-none" style="font-family:'Reem Kufi',sans-serif">تمور نادرة</p>
+          </div>
+        </div>
+        <p class="display text-cream-muted text-2xl italic" data-en="Not Every Date Is Rare." data-ar="ما كل تمرٍ نادر">Not Every Date Is Rare.</p>
+      </div>
+
+      <nav class="flex flex-wrap gap-x-9 gap-y-4 label" aria-label="Footer">
+        <a href="#collections" class="nav-link" data-en="Collections" data-ar="المجموعات">Collections</a>
+        <a href="#handover"   class="nav-link" data-en="Gifting"     data-ar="الإهداء">Gifting</a>
+        <a href="#corporate"  class="nav-link" data-en="Corporate"   data-ar="الشركات">Corporate</a>
+        <a href="https://www.instagram.com/raredates.jo/" target="_blank" rel="noopener" class="nav-link">Instagram</a>
+        <a href="#" class="nav-link" data-wa data-en="WhatsApp" data-ar="واتساب">WhatsApp</a>
+      </nav>
+    </div>
+
+    <div class="rule-tight opacity-50 mb-6"></div>
+    <div class="flex flex-col sm:flex-row justify-between gap-3 label text-cream-muted/55">
+      <p data-en="Amman, Jordan" data-ar="عمّان، الأردن">Amman, Jordan</p>
+      <p>© 2026 Rare Dates</p>
+    </div>
+  </div>
+</footer>
+
+<script>
+/* ═══════════════════════════════════════════════════════════
+   CONFIG — ⚠️ REPLACE THESE FOUR THINGS AND THE SITE IS LIVE
+   ═══════════════════════════════════════════════════════════ */
+const CONFIG = {
+  whatsapp:    "962790000000",   // REPLACE — real number, country code, no + or spaces
+  contactName: "",               // REPLACE — the name that signs messages, e.g. "Wajih"
+  prices: {
+    signature: "",               // REPLACE — e.g. "JOD 24"
+    fruit:     "",               // REPLACE — e.g. "JOD 14"
+    nine:      ""                // REPLACE — e.g. "JOD 34"
+  }
+};
+
+/* ── Prices ─────────────────────────────────────────────── */
+document.querySelectorAll("[data-price]").forEach(el=>{
+  const v = CONFIG.prices[el.dataset.price];
+  if(v) el.textContent = v;
+});
+
+/* ── WhatsApp links, pre-filled with context ────────────── */
+const waMsg = {
+  en: "Hello Rare Dates — I'd like to order. Which collections are available?",
+  ar: "مرحباً تمور نادرة — أريد أن أطلب. ما المجموعات المتوفرة؟"
+};
+const waCorp = {
+  en: "Hello Rare Dates — I'm enquiring about corporate gifting. Quantity and date below.",
+  ar: "مرحباً تمور نادرة — أستفسر عن هدايا الشركات. الكمية والتاريخ أدناه."
+};
+function wireWhatsApp(lang){
+  document.querySelectorAll("[data-wa]").forEach(a=>{
+    a.href = `https://wa.me/${CONFIG.whatsapp}?text=${encodeURIComponent(waMsg[lang])}`;
+    a.target = "_blank"; a.rel = "noopener";
+  });
+  document.querySelectorAll("[data-wa-corporate]").forEach(a=>{
+    a.href = `https://wa.me/${CONFIG.whatsapp}?text=${encodeURIComponent(waCorp[lang])}`;
+    a.target = "_blank"; a.rel = "noopener";
+  });
+}
+
+/* ── Language — Arabic is written, not translated (D5) ──── */
+let lang = "en";
+const langBtn = document.getElementById("langBtn");
+const langLabel = document.getElementById("langLabel");
+
+function setLang(next){
+  lang = next;
+  const isAr = lang === "ar";
+  document.documentElement.lang = isAr ? "ar" : "en";
+  document.documentElement.dir  = isAr ? "rtl" : "ltr";
+  document.body.classList.toggle("ar", isAr);
+  langLabel.textContent = isAr ? "English" : "العربية";
+  document.querySelectorAll("[data-en]").forEach(el=>{
+    const t = isAr ? el.dataset.ar : el.dataset.en;
+    if(t) el.textContent = t;
+  });
+  wireWhatsApp(lang);
+}
+langBtn.addEventListener("click", ()=> setLang(lang === "en" ? "ar" : "en"));
+wireWhatsApp("en");
+
+/* Allow ?lang=ar to load straight into Arabic — used for RTL verification */
+if(new URLSearchParams(location.search).get("lang") === "ar") setLang("ar");
+
+/* ── Scroll reveals — transform + opacity only ──────────── */
+/* Static capture mode for full-page screenshots */
+if(new URLSearchParams(location.search).has("static")){
+  document.documentElement.classList.add("static");
+}
+
+const io = new IntersectionObserver((entries)=>{
+  entries.forEach(e=>{
+    if(e.isIntersecting){ e.target.classList.add("in"); io.unobserve(e.target); }
+  });
+},{ threshold:.12, rootMargin:"0px 0px -8% 0px" });
+
+document.querySelectorAll(".reveal").forEach((el,i)=>{
+  el.style.transitionDelay = `${(i % 3) * 90}ms`;
+  io.observe(el);
+});
+</script>
+</body>
+</html>

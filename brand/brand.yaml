@@ -1,0 +1,30 @@
+schema_version: 1
+slug: rare-dates
+name: Rare Dates
+one_liner: Luxury Medjool dates filled and coated in Belgian chocolate, handcrafted in Jordan.
+tagline: "Not Every Date Is Rare."
+archetype: "The Connoisseur — selection, restraint, discernment"
+status: active
+stage: pre-launch
+industry: "Luxury confectionery / gourmet food — chocolate-coated Medjool dates"
+languages: [en, ar]
+links:
+  domain: ""
+  instagram: "https://www.instagram.com/raredates.jo/"
+  repo: ""
+created: 2026-08-21
+updated: 2026-08-21
+version: 1
+artifacts:
+  context: true
+  audience: true
+  naming: false
+  strategy: false
+  architecture: false
+  identity: true
+  voice: true
+  messaging: true
+  positioning: true
+  story: false
+  guidelines: true
+  audit: true
