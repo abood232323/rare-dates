@@ -61,10 +61,13 @@ body::after{
   opacity:.05; mix-blend-mode:overlay;
   background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='260' height='260'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.82' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
 }
-html,body{ margin:0; height:100%; }
+/* No height:100% here. It is a leftover from when the hero was position:fixed,
+   and combined with an overflow on the root it turns html into a fixed-height
+   scroll container: the viewport stops scrolling, window.scrollY stays at 0,
+   and the date never leaves the hero. */
+html,body{ margin:0; }
 /* overflow-x on body alone still let the documentElement scroll, which showed
-   up as a couple of pixels of sideways drift on a 360px phone. clip rather
-   than hidden: it does not create a scroll container. */
+   up as a couple of pixels of sideways drift at 360px. */
 html{ overflow-x:clip; }
 @supports not (overflow:clip){ html{ overflow-x:hidden; } }
 body{
