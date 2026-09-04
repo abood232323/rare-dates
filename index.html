@@ -695,10 +695,41 @@ body.locked{ overflow:hidden; }
 .foot-base p{ margin:0; color:rgba(184,168,148,.6); font-size:.76rem; letter-spacing:.06em; }
 
 
-.card-price{ margin:.85rem 0 0; color:var(--gold); letter-spacing:.14em; }
-.fp-buy{ display:flex; align-items:center; gap:1.15rem; flex-wrap:wrap; }
-.fp-price{ font-family:'Cinzel',Georgia,serif; letter-spacing:.09em; text-transform:uppercase;
-  font-size:.78rem; color:var(--cream-dim); }
+.fp-buy{ display:flex; align-items:center; gap:clamp(1.1rem,2vw,1.8rem); flex-wrap:wrap; }
+/* ── price ────────────────────────────────────────────────────────────────
+   It was an 11px label, which read as a footnote on the thing people are
+   actually deciding about. The numeral now carries it in Bodoni at display
+   size, with the currency set small in Cinzel and raised, the way a menu or a
+   price list sets it. */
+.card-price{
+  margin:1.05rem 0 0;
+  font-family:'Bodoni Moda',Didot,serif; font-weight:600;
+  font-size:clamp(1.75rem,2.3vw,2.15rem); line-height:1;
+  letter-spacing:-.015em; color:var(--gold);
+}
+.card-price .cur, .fp-price .cur{
+  font-family:'Cinzel',Georgia,serif; font-weight:400;
+  font-size:.40em; letter-spacing:.13em; color:var(--cream-dim);
+  vertical-align:.42em; margin-inline-end:.4em;
+}
+.fp-price{
+  /* inline-block, not flex: vertical-align does not apply to flex items, and
+     the raised currency mark is the whole point of the setting. */
+  display:inline-block; white-space:nowrap;
+  font-family:'Bodoni Moda',Didot,serif; font-weight:600;
+  font-size:clamp(2rem,3vw,2.7rem); line-height:1;
+  letter-spacing:-.015em; color:var(--gold);
+}
+.fp-price .per{
+  font-family:'Jost',sans-serif; font-weight:400;
+  font-size:.26em; letter-spacing:.14em; text-transform:uppercase;
+  color:var(--cream-dim); margin-inline-start:.8em; vertical-align:.5em;
+}
+@media(max-width:640px){
+  .card-price{ font-size:1.85rem; }
+  .fp-price{ font-size:2.1rem; }
+}
+
 
 
 /* The five flavour cards open a page, so their hover promises something. This
@@ -992,6 +1023,14 @@ body.locked{ overflow:hidden; }
    hoisted undefined. */
 const WHATSAPP = "962798781310";
 const PRICE = "JOD 15";
+/* Rendered as a small currency mark plus a large numeral. PRICE stays the
+   single place to edit. */
+function priceHTML(suffix){
+  const m = PRICE.match(/^\s*(\D+?)\s*([\d.,]+)\s*$/);
+  const cur = m ? m[1] : '', num = m ? m[2] : PRICE;
+  return '<span class="cur">' + cur + '</span>' + num +
+         (suffix ? '<span class="per">' + suffix + '</span>' : '');
+}
 const waText = "Hello Rare Dates, I would like to order.";
 const waJoin = "Hello Rare Dates, I want a say in the next flavour.";
 
@@ -1228,7 +1267,7 @@ FLAVOURS.forEach(function(f, i){
     '</div></div>' +
     '<h3 class="card-name"><a class="card-link" href="#/' + f.key + '">' + f.name + '</a></h3>' +
     '<p class="card-spec">' + f.spec + '</p>' +
-    '<p class="card-price label">' + PRICE + '</p>';
+    '<p class="card-price">' + priceHTML('') + '</p>';
   cardsEl.appendChild(el);
 });
 
@@ -1541,7 +1580,7 @@ function fillPage(i){
            '<path d="M50 8 C71 29, 71 71, 50 92 C29 71, 29 29, 50 8 Z"/></svg>' + t + '</li>';
   }).join('');
   fpDate.src = f.date; fpDate.alt = f.name;
-  document.getElementById('fpPrice').textContent = PRICE + ' per box';
+  document.getElementById('fpPrice').innerHTML = priceHTML('per box');
 
   const order = document.getElementById('fpOrder');
   order.href = 'https://wa.me/' + WHATSAPP + '?text=' +
